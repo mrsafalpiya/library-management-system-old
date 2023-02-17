@@ -20,18 +20,19 @@ func handleListBooks(db *sql.DB) gin.HandlerFunc {
 	}
 
 	input := struct {
-		Size int32  `form:"size"`
-		Page int32  `form:"page"`
-		Sort string `form:"sort"`
+		Size   int32  `form:"size"`
+		Page   int32  `form:"page"`
+		Sort   string `form:"sort"`
 		Search string `form:"search"`
 	}{}
 
 	paginationMeta := struct {
-		CurrentPage  int `json:"current_page"`
-		PageSize     int `json:"page_size"`
-		FirstPage    int `json:"first_page"`
-		LastPage     int `json:"last_page"`
-		TotalRecords int `json:"total_records"`
+		CurrentPage      int `json:"current_page"`
+		PageSize         int `json:"page_size"`
+		FirstPage        int `json:"first_page"`
+		LastPage         int `json:"last_page"`
+		TotalRecords     int `json:"total_records"`
+		PageRecordsCount int `json:"page_records_count"`
 	}{}
 
 	return func(ctx *gin.Context) {
@@ -53,6 +54,7 @@ func handleListBooks(db *sql.DB) gin.HandlerFunc {
 		if input.Sort == "" {
 			input.Sort = "title-asc"
 		}
+		paginationMeta.PageRecordsCount = 0
 
 		// Set sort
 
@@ -98,6 +100,7 @@ func handleListBooks(db *sql.DB) gin.HandlerFunc {
 			}
 
 			books = append(books, book)
+			paginationMeta.PageRecordsCount++
 		}
 
 		// Query for pagination metadata

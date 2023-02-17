@@ -1,9 +1,15 @@
+# General
+
+- Testing on both backend and frontend???
+- Hosting?
+
 # Frontend
 
 ## Staff
 
 - When listing users, color them blue if there are books borrowed, red if the books are late.
 - Hidden scrollbars on IOS :(
+- Type safety on JSON response.
 
 # Backend
 

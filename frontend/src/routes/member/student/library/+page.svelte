@@ -5,6 +5,8 @@
   let pageNum: number = 1;
   let pageSize: number = 10;
   let pagesCount: number;
+  let totalRecords: number | null = null;
+  let pageRecordsCount: number | null = null;
   let searchKeyword = "";
 
   async function fetchBooks(
@@ -26,6 +28,8 @@
     pageNum = obj.metadata.current_page;
     pageSize = obj.metadata.page_size;
     pagesCount = obj.metadata.last_page;
+    totalRecords = obj.metadata.total_records;
+    pageRecordsCount = obj.metadata.page_records_count;
 
     return obj.books;
   }
@@ -116,7 +120,7 @@
     {:else}
       <p class="text-center">No books available</p>
     {/if}
-    <Pagination bind:pageNum bind:pagesCount />
+    <Pagination bind:pageNum bind:pagesCount {totalRecords} {pageSize} {pageRecordsCount} />
   {:catch}
     <p class="text-center">Oops. Something's wrong</p>
   {/await}
