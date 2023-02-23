@@ -3,20 +3,19 @@ package idTypes
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	sqlc "github.com/mrsafalpiya/library-management/db/sqlc"
+	"github.com/mrsafalpiya/library-management/server"
+	"github.com/mrsafalpiya/library-management/utils"
 )
 
-func handleGet(queries *sqlc.Queries) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		idTypes, err := queries.ListIDTypes(ctx)
+func handleGet(srvCfg *server.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idTypes, err := srvCfg.Queries.ListIDTypes(r.Context())
 		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseServerErrorLog(w, err)
 			return
 		}
-		ctx.IndentedJSON(http.StatusOK, gin.H{
+
+		utils.ResponseOKData(w, utils.Envelope{
 			"id_types": idTypes,
 		})
 	}

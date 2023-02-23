@@ -1,10 +1,10 @@
 package idTypes
 
 import (
-	"github.com/gin-gonic/gin"
-	db "github.com/mrsafalpiya/library-management/db/sqlc"
+	"github.com/go-chi/chi/v5"
+	"github.com/mrsafalpiya/library-management/server"
 )
 
-func RegisterRoutes(r *gin.RouterGroup, queries *db.Queries) {
-	r.GET("/id-types", handleGet(queries))
+func RegisterRoutes(r chi.Router, srvCfg *server.Config) {
+	r.Get("/id-types", handleGet(srvCfg))
 }

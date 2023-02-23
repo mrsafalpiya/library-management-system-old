@@ -1,13 +1,15 @@
 package student
 
 import (
-	"database/sql"
 	"math"
 	"net/http"
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gin-gonic/gin"
+	"github.com/ggicci/httpin"
+	"github.com/go-chi/jwtauth"
+	"github.com/mrsafalpiya/library-management/server"
+	"github.com/mrsafalpiya/library-management/utils"
 )
 
 type Transaction struct {
@@ -17,9 +19,10 @@ type Transaction struct {
 	DateTimeString string    `json:"date_time_string"`
 }
 
-func handleDashboard(db *sql.DB) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		userID := ctx.GetInt64("user_id")
+func handleDashboard(srvCfg *server.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		userID := claims["user_id"].(float64)
 
 		type Borrow struct {
 			RegisterID    string    `json:"register_id"`
@@ -56,12 +59,10 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 			JOIN profiles ON profiles.user_id = users.id
 			LEFT OUTER JOIN batches ON batches.id = profiles.batch_id
 			WHERE users.id = $1;`
-		row := db.QueryRow(userQuery, userID)
+		row := srvCfg.DbConn.QueryRow(userQuery, userID)
 		err := row.Scan(&output.User.Name, &output.User.IDNum, &output.User.IDType, &output.User.Batch)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseServerErrorLog(w, err)
 			return
 		}
 
@@ -75,11 +76,9 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 			WHERE user_id = $1
 			ORDER BY transactions.id DESC
 			LIMIT 4;`
-		rows, err := db.Query(transactionsQuery, userID)
+		rows, err := srvCfg.DbConn.Query(transactionsQuery, userID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseServerErrorLog(w, err)
 			return
 		}
 		for rows.Next() {
@@ -87,9 +86,7 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 
 			err := rows.Scan(&transaction.Type, &transaction.BookName, &transaction.DateTime)
 			if err != nil {
-				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
+				utils.ResponseServerErrorLog(w, err)
 				return
 			}
 
@@ -104,11 +101,9 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 			JOIN copies ON copies.id = borrows.copy_id
 			JOIN books ON books.id = copies.book_id
 			WHERE borrows.user_id = $1;`
-		rows, err = db.Query(borrowsQuery, userID)
+		rows, err = srvCfg.DbConn.Query(borrowsQuery, userID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseServerErrorLog(w, err)
 			return
 		}
 		for rows.Next() {
@@ -116,9 +111,7 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 
 			err := rows.Scan(&borrow.RegisterID, &borrow.Title, &borrow.Author, &borrow.Publisher, &borrow.IssueDate)
 			if err != nil {
-				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
+				utils.ResponseServerErrorLog(w, err)
 				return
 			}
 
@@ -145,44 +138,16 @@ func handleDashboard(db *sql.DB) gin.HandlerFunc {
 			output.Transactions[i].DateTimeString = humanize.Time(dateTime)
 		}
 
-		ctx.IndentedJSON(http.StatusOK, output)
+		utils.ResponseOKData(w, output)
 	}
 }
 
-func handleListTransactions(db *sql.DB) gin.HandlerFunc {
-	input := struct {
-		Type string `form:"type"`
-		Size int32  `form:"size"`
-		Page int32  `form:"page"`
-	}{}
+func handleListTransactions(srvCfg *server.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		userID := claims["user_id"].(float64)
 
-	paginationMeta := struct {
-		CurrentPage  int `json:"current_page"`
-		PageSize     int `json:"page_size"`
-		FirstPage    int `json:"first_page"`
-		LastPage     int `json:"last_page"`
-		TotalRecords int `json:"total_records"`
-	}{}
-
-	return func(ctx *gin.Context) {
-		userID := ctx.GetInt64("user_id")
-
-		if err := ctx.ShouldBindQuery(&input); err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		// Default values
-		if input.Type == "" {
-			input.Type = ".*"
-		}
-		if input.Size == 0 {
-			input.Size = 5
-		}
-		if input.Page == 0 {
-			input.Page = 1
-		}
+		input := r.Context().Value(httpin.Input).(*ListTransactionsQuery)
 
 		query := `
 			SELECT transactions.transaction_type, books.title, created_at
@@ -200,11 +165,9 @@ func handleListTransactions(db *sql.DB) gin.HandlerFunc {
 			(input.Page - 1) * input.Size,
 		}
 
-		rows, err := db.Query(query, args...)
+		rows, err := srvCfg.DbConn.Query(query, args...)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseBadRequestErr(w, err.Error())
 			return
 		}
 
@@ -214,9 +177,7 @@ func handleListTransactions(db *sql.DB) gin.HandlerFunc {
 
 			err := rows.Scan(&transaction.Type, &transaction.BookName, &transaction.DateTime)
 			if err != nil {
-				ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
+				utils.ResponseBadRequestErr(w, err.Error())
 				return
 			}
 			transaction.DateTimeString = humanize.Time(transaction.DateTime)
@@ -226,18 +187,24 @@ func handleListTransactions(db *sql.DB) gin.HandlerFunc {
 
 		// Query for pagination metadata
 
+		paginationMeta := struct {
+			CurrentPage  int `json:"current_page"`
+			PageSize     int `json:"page_size"`
+			FirstPage    int `json:"first_page"`
+			LastPage     int `json:"last_page"`
+			TotalRecords int `json:"total_records"`
+		}{}
+
 		query = `
 			SELECT COUNT(*)
 			FROM transactions
 			JOIN copies ON copies.id = transactions.copy_id
 			JOIN books ON books.id = copies.book_id
 			WHERE user_id = $1 AND transaction_type ~* $2;`
-		row := db.QueryRow(query, userID, input.Type)
+		row := srvCfg.DbConn.QueryRow(query, userID, input.Type)
 		err = row.Scan(&paginationMeta.TotalRecords)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+			utils.ResponseBadRequestErr(w, err.Error())
 			return
 		}
 
@@ -248,7 +215,7 @@ func handleListTransactions(db *sql.DB) gin.HandlerFunc {
 		paginationMeta.FirstPage = 1
 		paginationMeta.LastPage = int(math.Ceil(float64(paginationMeta.TotalRecords) / float64(paginationMeta.PageSize)))
 
-		ctx.IndentedJSON(http.StatusOK, gin.H{
+		utils.ResponseOKData(w, utils.Envelope{
 			"metadata":     paginationMeta,
 			"transactions": transactions,
 		})

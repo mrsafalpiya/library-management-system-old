@@ -16,6 +16,9 @@ import (
 	db "github.com/mrsafalpiya/library-management/db/sqlc"
 	"github.com/mrsafalpiya/library-management/server"
 	"github.com/mrsafalpiya/library-management/services/auth"
+	"github.com/mrsafalpiya/library-management/services/books"
+	"github.com/mrsafalpiya/library-management/services/idTypes"
+	"github.com/mrsafalpiya/library-management/services/student"
 	"github.com/mrsafalpiya/library-management/services/users"
 
 	_ "github.com/lib/pq"
@@ -29,9 +32,9 @@ func registerRoutes(router *chi.Mux, srvCfg *server.Config) {
 	router.Route("/api/v1", func(r chi.Router) {
 		auth.RegisterRoutes(r, srvCfg)
 		users.RegisterRoutes(r, srvCfg)
-		// idTypes.RegisterRoutes(r, srvCfg)
-		// student.RegisterRoutes(r, srvCfg)
-		// books.RegisterRoutes(r, srvCfg)
+		idTypes.RegisterRoutes(r, srvCfg)
+		student.RegisterRoutes(r, srvCfg)
+		books.RegisterRoutes(r, srvCfg)
 	})
 }
 
