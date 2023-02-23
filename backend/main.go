@@ -2,73 +2,111 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"net/http"
 	"reflect"
 	"strings"
+	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-playground/validator/v10"
 
 	db "github.com/mrsafalpiya/library-management/db/sqlc"
+	"github.com/mrsafalpiya/library-management/server"
 	"github.com/mrsafalpiya/library-management/services/auth"
-	"github.com/mrsafalpiya/library-management/services/books"
-	"github.com/mrsafalpiya/library-management/services/idTypes"
-	"github.com/mrsafalpiya/library-management/services/student"
 	"github.com/mrsafalpiya/library-management/services/users"
 
 	_ "github.com/lib/pq"
 )
 
-func registerRoutes(r *gin.RouterGroup, db *sql.DB, queries *db.Queries) {
-	users.RegisterRoutes(r, db, queries)
-	auth.RegisterRoutes(r, queries)
-	idTypes.RegisterRoutes(r, queries)
-	student.RegisterRoutes(r, db)
-	books.RegisterRoutes(r, db)
+var (
+	port = 5050
+)
+
+func registerRoutes(router *chi.Mux, srvCfg *server.Config) {
+	router.Route("/api/v1", func(r chi.Router) {
+		auth.RegisterRoutes(r, srvCfg)
+		users.RegisterRoutes(r, srvCfg)
+		// idTypes.RegisterRoutes(r, srvCfg)
+		// student.RegisterRoutes(r, srvCfg)
+		// books.RegisterRoutes(r, srvCfg)
+	})
 }
 
-func registerCustomValidations() {
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		users.RegisterValidations(v)
-	}
-}
-
-func main() {
-	// DB connection
+func setupAndGetDBConn() (*sql.DB, error) {
 	dbConn, err := sql.Open("postgres", "postgresql://root:secret@localhost:5432/library?sslmode=disable")
 	if err != nil {
-		log.Fatal("Cannot connect to DB:", err)
+		return nil, err
 	}
 
 	err = dbConn.Ping()
 	if err != nil {
-		log.Fatal("[ERROR] Couldn't connect to database:", err)
+		return nil, err
+	}
+
+	return dbConn, nil
+}
+
+func setupAndGetValidator() *validator.Validate {
+	v := validator.New()
+	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+
+		if name == "-" {
+			return ""
+		}
+
+		return name
+	})
+
+	return v
+}
+
+func main() {
+	// Database
+
+	dbConn, err := setupAndGetDBConn()
+	if err != nil {
+		log.Fatal("Cannot connect to DB:", err)
 	}
 
 	queries := db.New(dbConn)
 
 	// Validator
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
-			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
 
-			if name == "-" {
-				return ""
-			}
-
-			return name
-		})
-	}
-	registerCustomValidations()
+	v := setupAndGetValidator()
 
 	// Server
-	r := gin.Default()
-	apiRoutes := r.Group("/api/v1")
 
-	registerRoutes(apiRoutes, dbConn, queries)
+	srvCfg := server.Config{
+		DbConn:    dbConn,
+		Queries:   queries,
+		Validator: v,
+	}
 
-	if err := r.Run(); err != nil {
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Timeout(60 * time.Second))
+
+	registerRoutes(router, &srvCfg)
+
+	fmt.Println("Registered routes are:")
+	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		fmt.Printf("%s %s\n", method, route)
+		return nil
+	}
+	if err := chi.Walk(router, walkFunc); err != nil {
+		log.Panicf("Logging err: %s\n", err.Error())
+	}
+	fmt.Println()
+
+	log.Printf("Listening to port %d", port)
+
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), router)
+	if err != nil {
 		log.Fatal(err)
 	}
 }

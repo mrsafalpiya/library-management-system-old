@@ -5,14 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
-func ReadJSON(ctx *gin.Context, dst any) error {
-	err := ctx.ShouldBindJSON(dst)
+type Envelope map[string]any
+
+func RequestJSON(r *http.Request, dst any) error {
+	err := json.NewDecoder(r.Body).Decode(&dst)
 	if err != nil {
 		var syntaxError *json.SyntaxError
 		var unmarshalTypeError *json.UnmarshalTypeError
@@ -44,4 +45,52 @@ func ReadJSON(ctx *gin.Context, dst any) error {
 	}
 
 	return nil
+}
+
+func ResponseJSON(w http.ResponseWriter, status int, data any) error {
+	js, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	js = append(js, '\n')
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(js)
+
+	return nil
+}
+
+func ResponseOKData(w http.ResponseWriter, data any) error {
+	return ResponseJSON(w, http.StatusOK, data)
+}
+
+func ResponseBadRequestErr(w http.ResponseWriter, err any) error {
+	return ResponseJSON(w, http.StatusBadRequest, Envelope{
+		"error": err,
+	})
+}
+
+func ResponseForbiddenErr(w http.ResponseWriter, err any) error {
+	return ResponseJSON(w, http.StatusForbidden, Envelope{
+		"error": err,
+	})
+}
+
+func ResponseUnauthorizedErr(w http.ResponseWriter, err any) error {
+	return ResponseJSON(w, http.StatusUnauthorized, Envelope{
+		"error": err,
+	})
+}
+
+// "Logged" represent that the err given will actually be logged but the
+// response body will be different.
+func ResponseServerErrorLog(w http.ResponseWriter, err any) error {
+	log.Println("[ERROR]", err)
+
+	message := "the server encountered a problem and could not process your request"
+	return ResponseJSON(w, http.StatusInternalServerError, Envelope{
+		"error": message,
+	})
 }

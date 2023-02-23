@@ -22,6 +22,13 @@ type Book struct {
 	Publisher sql.NullString `json:"publisher"`
 }
 
+type Borrow struct {
+	ID        int64     `json:"id"`
+	CopyID    int64     `json:"copy_id"`
+	UserID    int64     `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type Copy struct {
 	ID         int64         `json:"id"`
 	RegisterID string        `json:"register_id"`
@@ -60,9 +67,9 @@ type Transaction struct {
 }
 
 type User struct {
-	ID             int64         `json:"id"`
-	IDTypeID       sql.NullInt64 `json:"id_type_id"`
-	IDNum          string        `json:"id_num"`
-	Name           string        `json:"name"`
-	PasswordHashed string        `json:"password_hashed"`
+	ID             int64  `json:"id"`
+	IDTypeID       int64  `json:"id_type_id"`
+	IDNum          string `json:"id_num"`
+	Name           string `json:"name"`
+	PasswordHashed string `json:"password_hashed"`
 }

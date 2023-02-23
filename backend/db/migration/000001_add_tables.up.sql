@@ -1,6 +1,6 @@
 CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
-  "id_type_id" bigint,
+  "id_type_id" bigint NOT NULL,
   "id_num" varchar UNIQUE NOT NULL,
   "name" varchar NOT NULL,
   "password_hashed" varchar NOT NULL

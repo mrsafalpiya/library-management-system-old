@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -22,10 +21,10 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	IDTypeID       sql.NullInt64 `json:"id_type_id"`
-	IDNum          string        `json:"id_num"`
-	Name           string        `json:"name"`
-	PasswordHashed string        `json:"password_hashed"`
+	IDTypeID       int64  `json:"id_type_id"`
+	IDNum          string `json:"id_num"`
+	Name           string `json:"name"`
+	PasswordHashed string `json:"password_hashed"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -142,9 +141,9 @@ OFFSET $3
 `
 
 type ListUsersOfIDTypeParams struct {
-	IDTypeID sql.NullInt64 `json:"id_type_id"`
-	Limit    int32         `json:"limit"`
-	Offset   int32         `json:"offset"`
+	IDTypeID int64 `json:"id_type_id"`
+	Limit    int32 `json:"limit"`
+	Offset   int32 `json:"offset"`
 }
 
 func (q *Queries) ListUsersOfIDType(ctx context.Context, arg ListUsersOfIDTypeParams) ([]User, error) {
@@ -184,11 +183,11 @@ RETURNING id, id_type_id, id_num, name, password_hashed
 `
 
 type UpdateUserParams struct {
-	ID             int64         `json:"id"`
-	IDTypeID       sql.NullInt64 `json:"id_type_id"`
-	IDNum          string        `json:"id_num"`
-	Name           string        `json:"name"`
-	PasswordHashed string        `json:"password_hashed"`
+	ID             int64  `json:"id"`
+	IDTypeID       int64  `json:"id_type_id"`
+	IDNum          string `json:"id_num"`
+	Name           string `json:"name"`
+	PasswordHashed string `json:"password_hashed"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

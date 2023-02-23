@@ -3,82 +3,51 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/mrsafalpiya/library-management/services/auth"
+	"github.com/go-chi/jwtauth"
+	"github.com/mrsafalpiya/library-management/utils"
 )
 
-func LoggedIn(ctx *gin.Context) {
-	jwtCookies, err := ctx.Cookie("jwt")
-	if err != nil || jwtCookies == "" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "token not set",
-		})
-		return
-	}
+// Place this middleware AFTER the `JWT` middleware.
+func ShouldBeStudent(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		idType := claims["id_type"].(string)
 
-	type TokenClaim struct {
-		UserID int64 `json:"user_id"`
-		IDType string `json:"id_type"`
-		jwt.StandardClaims
-	}
+		if idType != "Student" {
+			utils.ResponseForbiddenErr(w, "your account does not have the necessary permissions to access this resource -- must be student")
+			return
+		}
 
-	token, err := jwt.ParseWithClaims(jwtCookies, &TokenClaim{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(auth.SecretKey), nil
+		next.ServeHTTP(w, r)
 	})
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid token",
-		})
-		return
-	}
-
-	claims := token.Claims.(*TokenClaim)
-	if !token.Valid {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid token",
-		})
-		return
-	}
-
-	ctx.Set("user_id", claims.UserID)
-	ctx.Set("id_type", claims.IDType)
-
-	ctx.Next()
 }
 
-// Place this middleware AFTER the `LoggedIn` middleware.
-func ShouldBeStudent(ctx *gin.Context) {
-	idType := ctx.GetString("id_type")
+// Place this middleware AFTER the `JWT` middleware.
+func ShouldBeStaff(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		idType := claims["id_type"].(string)
 
-	if idType != "Student" {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-			"error": "your account doesn't have the necessary permissions to access this resource -- must be student",
-		})
-		return
-	}
+		if idType != "Staff" {
+			utils.ResponseForbiddenErr(w, "your account does not have the necessary permissions to access this resource -- must be staff")
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
-// Place this middleware AFTER the `LoggedIn` middleware.
-func ShouldBeStaff(ctx *gin.Context) {
-	idType := ctx.GetString("id_type")
+// Place this middleware AFTER the `JWT` middleware.
+func ShouldBeTeacher(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		idType := claims["id_type"].(string)
 
-	if idType != "Staff" {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-			"error": "your account doesn't have the necessary permissions to access this resource -- must be staff",
-		})
-		return
-	}
-}
+		if idType != "Teacher" {
+			utils.ResponseForbiddenErr(w, "your account does not have the necessary permissions to access this resource -- must be teacher")
+			return
+		}
 
-// Place this middleware AFTER the `LoggedIn` middleware.
-func ShouldBeTeacher(ctx *gin.Context) {
-	idType := ctx.GetString("id_type")
-
-	if idType != "Teacher" {
-		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-			"error": "your account doesn't have the necessary permissions to access this resource -- must be staff",
-		})
-		return
-	}
+		next.ServeHTTP(w, r)
+	})
 }

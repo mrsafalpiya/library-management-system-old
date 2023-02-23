@@ -2,71 +2,74 @@ package auth
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
-	sqlc "github.com/mrsafalpiya/library-management/db/sqlc"
+	"github.com/mrsafalpiya/library-management/db"
+	"github.com/mrsafalpiya/library-management/server"
 	"github.com/mrsafalpiya/library-management/utils"
+	"github.com/mrsafalpiya/library-management/services/jwtAuth"
 	"golang.org/x/crypto/bcrypt"
 )
 
-const SecretKey = "secret" // TODO: Read SecretKey from environmental variables
+func handleLogin(srvCfg *server.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Input
 
-func handleLogin(queries *sqlc.Queries) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
 		input := struct {
-			IDType   int64  `json:"id_type" binding:"required"`
-			IDNum    string `json:"id_num" binding:"required"`
-			Password string `json:"password" binding:"required"`
+			IDType   int64  `json:"id_type" validate:"required"`
+			IDNum    string `json:"id_num" validate:"required"`
+			Password string `json:"password" validate:"required"`
 		}{}
 
-		if err := utils.ReadJSON(ctx, &input); err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": utils.ValidatorErrMsg(err),
-			})
+		if err := utils.RequestJSON(r, &input); err != nil {
+			utils.ResponseBadRequestErr(w, err.Error())
+			return
+		}
+
+		if err := srvCfg.Validator.Struct(input); err != nil {
+			utils.ResponseBadRequestErr(w, utils.ValidatorErrMsg(err))
 			return
 		}
 
 		// Query the user
 
-		user, err := queries.GetUserOfIDNum(ctx, input.IDNum)
+		user, err := srvCfg.Queries.GetUserOfIDNum(r.Context(), input.IDNum)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-					"error": "user with the given ID number doesn't exist",
+			switch {
+			case errors.Is(err, sql.ErrNoRows):
+				utils.ResponseForbiddenErr(w, utils.Envelope{
+					"id_num": fmt.Sprintf("user with the given ID number '%s' does not exist", input.IDNum),
 				})
-				return
+			default:
+				utils.ResponseForbiddenErr(w, db.DBErrorString(err))
 			}
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+
 			return
 		}
 
 		// Query the ID type
 
-		idType, err := queries.GetIDType(ctx, user.IDTypeID.Int64)
+		idType, err := srvCfg.Queries.GetIDType(r.Context(), user.IDTypeID)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-					"error": "user's ID type is invalid",
+			switch {
+			case errors.Is(err, sql.ErrNoRows):
+				utils.ResponseForbiddenErr(w, utils.Envelope{
+					"id_type": fmt.Sprintf("id type of the given id '%d' does not exist", input.IDType),
 				})
-				return
+			default:
+				utils.ResponseForbiddenErr(w, db.DBErrorString(err))
 			}
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+
 			return
 		}
 
 		// Check if the user belongs to the given ID type
 
-		if user.IDTypeID.Int64 != input.IDType {
-			ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": "user doesn't belong to the given ID type",
-			})
+		if user.IDTypeID != input.IDType {
+			utils.ResponseBadRequestErr(w, "user doesn't belong to the given ID type")
 			return
 		}
 
@@ -74,38 +77,38 @@ func handleLogin(queries *sqlc.Queries) gin.HandlerFunc {
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHashed), []byte(input.Password))
 		if err != nil {
-			ctx.IndentedJSON(http.StatusBadGateway, gin.H{
-				"error": "incorrect password",
-			})
+			utils.ResponseUnauthorizedErr(w, "incorrect password")
 			return
 		}
 
 		// Generate JWT
 
-		claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		_, tokenString, _ := jwtAuth.TokenAuth.Encode(map[string]interface{}{
 			"user_id": user.ID,
 			"id_type": idType.IDType,
 			"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		})
-		token, err := claims.SignedString([]byte(SecretKey))
+
 		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-				"error": "couldn't login",
-			})
+			utils.ResponseServerErrorLog(w, err)
+			return
 		}
 
-		ctx.SetCookie("jwt", token, 24*int(time.Hour.Seconds()), "", "", false, true)
-
-		ctx.IndentedJSON(http.StatusOK, gin.H{
-			"message": "success",
+		utils.ResponseOKData(w, utils.Envelope{
+			"token": tokenString,
 		})
 	}
 }
 
-func handleLogout(ctx *gin.Context) {
-	ctx.SetCookie("jwt", "", -int(time.Hour.Seconds()), "", "", true, true)
+func handleLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "jwt",
+		Expires:  time.Now().Add(-time.Hour),
+		Secure:   false,
+		HttpOnly: true,
+	})
 
-	ctx.IndentedJSON(http.StatusOK, gin.H{
+	utils.ResponseOKData(w, utils.Envelope{
 		"message": "success",
 	})
 }

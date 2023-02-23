@@ -52,7 +52,7 @@ func DBErrorString(err error) any {
 		submatches := r.FindStringSubmatch(detail)
 
 		if len(submatches) == 4 {
-			return map[string]string{submatches[1]: fmt.Sprintf("\"%s\" %s", submatches[2], submatches[3])}
+			return map[string]string{submatches[1]: fmt.Sprintf("'%s' %s", submatches[2], submatches[3])}
 		}
 		return pqErr.Detail
 	default:

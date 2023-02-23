@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
-	db "github.com/mrsafalpiya/library-management/db/sqlc"
+	"github.com/go-chi/chi/v5"
+	"github.com/mrsafalpiya/library-management/server"
 )
 
-func RegisterRoutes(r *gin.RouterGroup, queries *db.Queries) {
-	r.POST("/auth/login", handleLogin(queries))
-	r.POST("/auth/logout", handleLogout)
+func RegisterRoutes(r chi.Router, srvCfg *server.Config) {
+	r.Post("/auth/login", handleLogin(srvCfg))
+	r.Post("/auth/logout", handleLogout)
 }
