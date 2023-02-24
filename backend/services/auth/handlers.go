@@ -9,8 +9,8 @@ import (
 
 	"github.com/mrsafalpiya/library-management/db"
 	"github.com/mrsafalpiya/library-management/server"
-	"github.com/mrsafalpiya/library-management/utils"
 	"github.com/mrsafalpiya/library-management/services/jwtAuth"
+	"github.com/mrsafalpiya/library-management/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -83,10 +83,12 @@ func handleLogin(srvCfg *server.Config) http.HandlerFunc {
 
 		// Generate JWT
 
+		expireAt := time.Now().Add(time.Hour * 24)
+
 		_, tokenString, _ := jwtAuth.TokenAuth.Encode(map[string]interface{}{
 			"user_id": user.ID,
 			"id_type": idType.IDType,
-			"exp":     time.Now().Add(time.Hour * 24).Unix(),
+			"exp":     expireAt.Unix(),
 		})
 
 		if err != nil {
@@ -96,6 +98,7 @@ func handleLogin(srvCfg *server.Config) http.HandlerFunc {
 
 		utils.ResponseOKData(w, utils.Envelope{
 			"token": tokenString,
+			"expires": expireAt,
 		})
 	}
 }
