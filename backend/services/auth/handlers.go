@@ -40,9 +40,7 @@ func handleLogin(srvCfg *server.Config) http.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, sql.ErrNoRows):
-				utils.ResponseForbiddenErr(w, utils.Envelope{
-					"id_num": fmt.Sprintf("user with the given ID number '%s' does not exist", input.IDNum),
-				})
+				utils.ResponseForbiddenErr(w, fmt.Sprintf("user with the given ID number '%s' does not exist", input.IDNum))
 			default:
 				utils.ResponseForbiddenErr(w, db.DBErrorString(err))
 			}
@@ -56,9 +54,7 @@ func handleLogin(srvCfg *server.Config) http.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, sql.ErrNoRows):
-				utils.ResponseForbiddenErr(w, utils.Envelope{
-					"id_type": fmt.Sprintf("id type of the given id '%d' does not exist", input.IDType),
-				})
+				utils.ResponseForbiddenErr(w, fmt.Sprintf("id type of the given id '%d' does not exist", input.IDType))
 			default:
 				utils.ResponseForbiddenErr(w, db.DBErrorString(err))
 			}
@@ -97,7 +93,7 @@ func handleLogin(srvCfg *server.Config) http.HandlerFunc {
 		}
 
 		utils.ResponseOKData(w, utils.Envelope{
-			"token": tokenString,
+			"token":   tokenString,
 			"expires": expireAt,
 		})
 	}

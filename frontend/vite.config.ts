@@ -1,13 +1,12 @@
-import { sveltekit } from "@sveltejs/kit/vite";
-import type { UserConfig } from "vite";
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
-const config: UserConfig = {
-  plugins: [sveltekit()],
+export default defineConfig({
+	plugins: [sveltekit()],
+
   server: {
     proxy: {
-      "/api/v1": "http://0.0.0.0:8080",
+      "/api": "http://localhost:5050",
     },
   },
-};
-
-export default config;
+});

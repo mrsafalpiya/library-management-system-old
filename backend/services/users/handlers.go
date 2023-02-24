@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/jwtauth"
 	"github.com/mrsafalpiya/library-management/db"
@@ -127,6 +128,9 @@ func handleUser(srvCfg *server.Config) http.HandlerFunc {
 			utils.ResponseServerErrorLog(w, err)
 			return
 		}
+
+		// Always make the ID type lowercase.
+		output.IDType = strings.ToLower(output.IDType)
 
 		utils.ResponseOKData(w, output)
 	}
