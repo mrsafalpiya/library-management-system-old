@@ -8,8 +8,7 @@ export const handle = (async ({ event, resolve }) => {
       throw redirect(302, "/login", message, event);
     }
 
-    // FIXME: https://github.com/sveltejs/kit/issues/9183
-    const res = await event.fetch("http://localhost:5050/api/v1/user");
+    const res = await event.fetch("/api/v1/user");
 
     if (!res.ok) {
       event.cookies.delete("jwt", {
