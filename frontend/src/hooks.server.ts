@@ -10,12 +10,16 @@ export const handle = (async ({ event, resolve }) => {
 
     // FIXME: https://github.com/sveltejs/kit/issues/9183
     const res = await event.fetch("http://localhost:5050/api/v1/user");
-    const data = await res.json();
 
     if (!res.ok) {
+      event.cookies.delete("jwt", {
+        secure: false,
+      });
       const message = { type: "error", message: "You must login first" } as const;
       throw redirect(302, "/login", message, event);
     }
+
+    const data = await res.json();
 
     let idType: string = data.id_type;
     event.locals.idType = idType;

@@ -1,4 +1,4 @@
-import {dev} from "$app/environment";
+import { dev } from "$app/environment";
 import { fail, redirect } from "@sveltejs/kit";
 import { setFlash } from "sveltekit-flash-message/server";
 import type { PageServerLoad, Actions } from "./$types";
