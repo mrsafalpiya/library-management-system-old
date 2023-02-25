@@ -1,3 +1,4 @@
+import {dev} from "$app/environment";
 import { fail, redirect } from "@sveltejs/kit";
 import { setFlash } from "sveltekit-flash-message/server";
 import type { PageServerLoad, Actions } from "./$types";
@@ -7,16 +8,6 @@ export const load = (async (event) => {
   if (event.cookies.get("jwt")) {
     throw redirect(302, "/member");
   }
-
-  // Get ID Types
-  const res = await event.fetch("/api/v1/id-types");
-  if (!res.ok) {
-    setFlash({ type: "error", message: "Could not get ID types" }, event);
-    return;
-  }
-
-  const data = await res.json();
-  return data;
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -48,7 +39,7 @@ export const actions = {
     event.cookies.set("jwt", data.token, {
       path: "/",
       expires: new Date(data.expires),
-      secure: false,
+      secure: !dev,
       httpOnly: true,
     });
 

@@ -1,9 +1,18 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { enhance } from '$app/forms';
+  import { enhance } from "$app/forms";
   import { initFlash, updateFlash } from "sveltekit-flash-message/client";
 
-  export let idTypes: any;
+  async function fetchIDTypes() {
+    const res = await fetch("/api/v1/id-types");
+    if (!res.ok) {
+      $flash = { type: "error", message: "Could not get ID types" };
+      throw "Could not get ID types";
+    }
+
+    const data = await res.json();
+    return data.id_types;
+  }
 
   const flash = initFlash(page);
 
@@ -13,25 +22,27 @@
 <form
   class="flex flex-col gap-4"
   method="POST"
-    on:submit={() => {
-      $flash = undefined;
-      isLoading = true;
+  on:submit={() => {
+    $flash = undefined;
+    isLoading = true;
+  }}
+  use:enhance={() =>
+    ({ update }) => {
+      updateFlash(page, update);
+      isLoading = false;
     }}
-    use:enhance={() =>
-      ({ update }) => {
-        updateFlash(page, update);
-        isLoading = false;
-      }}
 >
   <div>
     <select class="select-bordered select w-full max-w-xs" name="id-type">
-      {#if idTypes}
+      {#await fetchIDTypes()}
+        <option selected disabled>Loading...</option>
+      {:then idTypes}
         {#each idTypes as idType}
           <option value={idType.id}>{idType.id_type}</option>
         {/each}
-      {:else}
+      {:catch}
         <option selected disabled>No ID types available</option>
-      {/if}
+      {/await}
     </select>
 
     <div class="form-control w-full max-w-xs">

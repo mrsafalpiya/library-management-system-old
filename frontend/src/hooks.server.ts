@@ -20,6 +20,8 @@ export const handle = (async ({ event, resolve }) => {
     let idType: string = data.id_type;
     event.locals.idType = idType;
 
+    // Get access to users with proper id type.
+
     if (event.url.pathname.startsWith("/member/student") && idType != "student") {
       throw redirect(302, "/member");
     }
