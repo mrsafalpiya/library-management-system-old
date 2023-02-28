@@ -24,18 +24,29 @@ export const handle = (async ({ event, resolve }) => {
     event.locals.userIDType = userIDType;
     event.locals.userName = data.name;
 
-    // Get access to users with proper id type.
+    // Users get access only to their respective ID type.
 
     if (event.url.pathname.startsWith("/member/student") && userIDType != "student") {
       throw redirect(302, "/member");
     }
-
     if (event.url.pathname.startsWith("/member/staff") && userIDType != "staff") {
       throw redirect(302, "/member");
     }
-
     if (event.url.pathname.startsWith("/member/teacher") && userIDType != "teacher") {
       throw redirect(302, "/member");
+    }
+
+    // Proper redirects
+
+    if (event.url.pathname == "/member") {
+      throw redirect(302, `/member/${userIDType}/dashboard`);
+    }
+
+    switch (event.url.pathname) {
+      case "/member/student":
+      case "/member/staff":
+      case "/member/teacher":
+        throw redirect(302, `/member/${userIDType}/dashboard`);
     }
   }
 

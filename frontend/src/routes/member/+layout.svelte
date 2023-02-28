@@ -19,8 +19,8 @@
   import DrawerLink from "./components/DrawerLink.svelte";
 
   export let data: LayoutData;
-  const userName: string = data.userName;
-  const userIDType: string = data.userIDType;
+  const userName: string = data.user.name;
+  const userIDType: string = data.user.id_type;
 </script>
 
 <div class="scrollbar drawer-mobile drawer">
@@ -85,7 +85,7 @@
       </div>
       <div class="divider hidden lg:flex" />
       <!-- Sidebar content here -->
-      {#if userIDType === "student"}
+      {#if userIDType === "Student"}
         <DrawerLink href="/member/student/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>
@@ -107,7 +107,7 @@
         <DrawerLink href="/member/student/handsout">
           <Fa class="inline-block" icon={faHandHolding} /> Handsout
         </DrawerLink>
-      {:else if userIDType === "staff"}
+      {:else if userIDType === "Staff"}
         <DrawerLink href="/member/staff/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>
