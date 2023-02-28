@@ -27,13 +27,16 @@ export const handle = (async ({ event, resolve }) => {
     // Users get access only to their respective ID type.
 
     if (event.url.pathname.startsWith("/member/student") && userIDType != "student") {
-      throw redirect(302, "/member");
+      const message = { type: "error", message: "Only student can access that page" } as const;
+      throw redirect(302, "/member", message, event);
     }
     if (event.url.pathname.startsWith("/member/staff") && userIDType != "staff") {
-      throw redirect(302, "/member");
+      const message = { type: "error", message: "Only staff can access that page" } as const;
+      throw redirect(302, "/member", message, event);
     }
     if (event.url.pathname.startsWith("/member/teacher") && userIDType != "teacher") {
-      throw redirect(302, "/member");
+      const message = { type: "error", message: "Only teacher can access that page" } as const;
+      throw redirect(302, "/member", message, event);
     }
 
     // Proper redirects
