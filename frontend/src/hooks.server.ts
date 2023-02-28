@@ -20,20 +20,21 @@ export const handle = (async ({ event, resolve }) => {
 
     const data = await res.json();
 
-    let idType: string = data.id_type;
-    event.locals.idType = idType;
+    let userIDType: string = data.id_type;
+    event.locals.userIDType = userIDType;
+    event.locals.userName = data.name;
 
     // Get access to users with proper id type.
 
-    if (event.url.pathname.startsWith("/member/student") && idType != "student") {
+    if (event.url.pathname.startsWith("/member/student") && userIDType != "student") {
       throw redirect(302, "/member");
     }
 
-    if (event.url.pathname.startsWith("/member/staff") && idType != "staff") {
+    if (event.url.pathname.startsWith("/member/staff") && userIDType != "staff") {
       throw redirect(302, "/member");
     }
 
-    if (event.url.pathname.startsWith("/member/teacher") && idType != "teacher") {
+    if (event.url.pathname.startsWith("/member/teacher") && userIDType != "teacher") {
       throw redirect(302, "/member");
     }
   }

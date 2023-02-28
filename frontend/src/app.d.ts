@@ -6,7 +6,10 @@ declare global {
       flash?: { type: "success" | "error"; message: string };
     }
     // interface Error {}
-    // interface Locals {}
+    interface Locals {
+      userName: string;
+      userIDType: string;
+    }
     // interface PageData {}
     // interface Platform {}
   }
