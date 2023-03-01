@@ -2,4 +2,4 @@ package jwtAuth
 
 import "github.com/go-chi/jwtauth"
 
-var TokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
+var Token = jwtauth.New("HS256", []byte("secret"), nil)

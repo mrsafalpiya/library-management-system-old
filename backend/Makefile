@@ -25,7 +25,7 @@ confirm:
 ## run/api: run the cmd/api application
 .PHONY: run/api
 run/api:
-	@go run .
+	@go run ./cmd/api
 
 ## air/api: run the cmd/api application
 .PHONY: air/api
@@ -36,8 +36,13 @@ air/api:
 .PHONY: build/api
 build/api:
 	@echo "Building cmd/api..."
-	go build -ldflags="-s" -o=./bin/api
-	GOOS=linux GOARCH=amd64 go build -ldflags="-s" -o=./bin/linux_amd64/api
+	go build -ldflags="-s" -o=./bin/api ./cmd/api
+	GOOS=linux GOARCH=amd64 go build -ldflags="-s" -o=./bin/linux_amd64/api ./cmd/api
+
+## clean: remove any output and build files
+.PHONY: clean
+clean:
+	rm -rf bin
 
 # =========================================================================== #
 # DEVELOPMENT
@@ -73,38 +78,38 @@ db/psql:
 .PHONY: db/migrations/new
 db/migrations/new:
 	@echo "Creating migration files for ${name}..."
-	migrate create -seq -ext=.sql -dir=./db/migration ${name}
+	migrate create -seq -ext=.sql -dir=./db/migrations ${name}
 
 ## db/migrations/up: apply all up database migrations
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo "Running up migrations..."
-	@migrate -path db/migration -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up
+	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up
 
 ## db/migrations/down: apply all down database migrations
 .PHONY: db/migrations/down
 db/migrations/down:
-	@migrate -path db/migration -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down
+	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down
 
 ## db/migrations/up1: apply all up database migrations
 .PHONY: db/migrations/up1
 db/migrations/up1: confirm
 	@echo "Running up migration..."
-	@migrate -path db/migration -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up 1
+	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up 1
 
 ## db/migrations/down: apply all down database migrations
 .PHONY: db/migrations/down1
 db/migrations/down1:
-	@migrate -path db/migration -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down 1
-
-## db/sqlc: run `sqlc generate`
-.PHONY: db/sqlc
-db/sqlc:
-	sqlc generate
+	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down 1
 
 # =========================================================================== #
 # QUALITY CONTROL
 # =========================================================================== #
+
+## format: run golang's fmt tool on all .go files
+.PHONY: format
+format:
+	go fmt ./...
 
 ## test: run golang tests
 .PHONY: test
