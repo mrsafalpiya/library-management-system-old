@@ -1,0 +1,11 @@
+{
+  "transforms": [
+    {
+      "mode": "sql",
+      "include": "services/**/*.sql"
+    }
+  ],
+  "srcDir": "./src/",
+  "failOnError": false,
+  "camelCaseColumnNames": false
+}
