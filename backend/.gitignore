@@ -1,3 +1,5 @@
+node_modules
+dist
+*.log
+.npm
 .envrc
-bin/
-tmp/

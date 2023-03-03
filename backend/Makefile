@@ -2,7 +2,6 @@ include .envrc
 
 CONTAINER_NAME = library-postgres
 IMAGE_NAME     = postgres:12-alpine
-DB_NAME        = library
 
 # =========================================================================== #
 # HELPERS
@@ -22,27 +21,16 @@ confirm:
 # RUN AND BUILD
 # =========================================================================== #
 
-## run/api: run the cmd/api application
+## run/api: run the cmd/api application in dev mode
 .PHONY: run/api
 run/api:
-	@go run ./cmd/api
-
-## air/api: run the cmd/api application
-.PHONY: air/api
-air/api:
-	@air
+	yarn dev
 
 ## build/api: build the cmd/api application
 .PHONY: build/api
 build/api:
 	@echo "Building cmd/api..."
-	go build -ldflags="-s" -o=./bin/api ./cmd/api
-	GOOS=linux GOARCH=amd64 go build -ldflags="-s" -o=./bin/linux_amd64/api ./cmd/api
-
-## clean: remove any output and build files
-.PHONY: clean
-clean:
-	rm -rf bin
+	yarn build
 
 # =========================================================================== #
 # DEVELOPMENT
@@ -54,17 +42,17 @@ clean:
 ## docker/postgres: create a new docker container
 .PHONY: docker/postgres
 docker/postgres:
-	docker run --name ${CONTAINER_NAME} -p 5432:5432 -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -d ${IMAGE_NAME}
+	docker run --name ${CONTAINER_NAME} -p 5432:5432 -e PGUSER=${PGUSER} -e PGPASSWORD=${PGPASSWORD} -d ${IMAGE_NAME}
 
 ## docker/createdb: create the database on the container
 .PHONY: docker/createdb
 docker/createdb:
-	docker exec -it ${CONTAINER_NAME} createdb --username=${POSTGRES_USER} --owner=${POSTGRES_USER} ${DB_NAME}
+	docker exec -it ${CONTAINER_NAME} createdb --username=${PGUSER} --owner=${PGUSER} ${PGDATABASE}
 
 ## docker/dropdb: drop the database on the container
 .PHONY: docker/dropdb
 docker/dropdb:
-	docker exec -it ${CONTAINER_NAME} dropdb ${DB_NAME}
+	docker exec -it ${CONTAINER_NAME} dropdb ${PGDATABASE}
 
 # Database
 # --------
@@ -72,46 +60,46 @@ docker/dropdb:
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
 db/psql:
-	docker exec -it ${CONTAINER_NAME} psql -U ${POSTGRES_USER}
+	docker exec -it ${CONTAINER_NAME} psql -U ${PGUSER}
 
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
 db/migrations/new:
 	@echo "Creating migration files for ${name}..."
-	migrate create -seq -ext=.sql -dir=./db/migrations ${name}
+	migrate create -seq -ext=.sql -dir=./migrations ${name}
 
 ## db/migrations/up: apply all up database migrations
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo "Running up migrations..."
-	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up
+	@migrate -path migrations -database "postgresql://${PGUSER}:${PGPASSWORD}@localhost:5432/${PGDATABASE}?sslmode=disable" -verbose up
 
 ## db/migrations/down: apply all down database migrations
 .PHONY: db/migrations/down
 db/migrations/down:
-	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down
+	@migrate -path migrations -database "postgresql://${PGUSER}:${PGPASSWORD}@localhost:5432/${PGDATABASE}?sslmode=disable" -verbose down
 
 ## db/migrations/up1: apply all up database migrations
 .PHONY: db/migrations/up1
 db/migrations/up1: confirm
 	@echo "Running up migration..."
-	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose up 1
+	@migrate -path migrations -database "postgresql://${PGUSER}:${PGPASSWORD}@localhost:5432/${PGDATABASE}?sslmode=disable" -verbose up 1
 
 ## db/migrations/down: apply all down database migrations
 .PHONY: db/migrations/down1
 db/migrations/down1:
-	@migrate -path db/migrations -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${DB_NAME}?sslmode=disable" -verbose down 1
+	@migrate -path migrations -database "postgresql://${PGUSER}:${PGPASSWORD}@localhost:5432/${PGDATABASE}?sslmode=disable" -verbose down 1
+
+## db/pgtyped: run `yarn pgtyped`
+.PHONY: db/pgtyped
+db/pgtyped:
+	PGHOST=${PGHOST} PGUSER=${PGUSER} PGPASSWORD=${PGPASSWORD} PGDATABASE=${PGDATABASE} yarn pgtyped -c pgtyped.json
 
 # =========================================================================== #
 # QUALITY CONTROL
 # =========================================================================== #
 
-## format: run golang's fmt tool on all .go files
+## format: run prettier
 .PHONY: format
 format:
-	go fmt ./...
-
-## test: run golang tests
-.PHONY: test
-test:
-	go test -v -cover ./...
+	yarn format
