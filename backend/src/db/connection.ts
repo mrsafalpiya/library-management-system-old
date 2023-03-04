@@ -14,10 +14,8 @@ export async function setupAndGetDBConn(
     user: user,
     password: password,
   });
-  dbConn.connect((err) => {
-    if (err) {
-      throw Error(err.message)
-    }
+  await dbConn.connect().catch((err: Error) => {
+    throw err;
   });
-  return dbConn
+  return dbConn;
 }

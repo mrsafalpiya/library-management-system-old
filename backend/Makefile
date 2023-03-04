@@ -93,7 +93,7 @@ db/migrations/down1:
 ## db/pgtyped: run `yarn pgtyped`
 .PHONY: db/pgtyped
 db/pgtyped:
-	PGHOST=${PGHOST} PGUSER=${PGUSER} PGPASSWORD=${PGPASSWORD} PGDATABASE=${PGDATABASE} yarn pgtyped -c pgtyped.json
+	@PGHOST=${PGHOST} PGUSER=${PGUSER} PGPASSWORD=${PGPASSWORD} PGDATABASE=${PGDATABASE} yarn pgtyped -c pgtyped.json
 
 # =========================================================================== #
 # QUALITY CONTROL
