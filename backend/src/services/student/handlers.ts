@@ -1,5 +1,5 @@
 import { ServerConfig } from "app";
-import { Response, RequestHandler } from "express";
+import { Response, RequestHandler, query } from "express";
 import {
   responseBadRequest,
   responseOK,
@@ -24,11 +24,13 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
     type outputUserType = {
       name: string;
       id_num: string;
+      id_type: string;
       batch: string;
     };
     let outputUser: outputUserType = {
       name: "",
       id_num: "",
+      id_type: "student",
       batch: "",
     };
 
@@ -111,6 +113,8 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         return;
       }
 
+      outputBorrows.borrows_count = queryResponse.length;
+
       queryResponse.forEach((borrow) => {
         let newBorrow = <borrowDetailsInterface>{};
 
@@ -125,7 +129,6 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         if (new Date() > newBorrow.due_date) {
           newBorrow.is_late = true;
           outputBorrows.has_late_borrows = true;
-          outputBorrows.borrows_count++;
         }
 
         outputBorrows.list.push(newBorrow);
