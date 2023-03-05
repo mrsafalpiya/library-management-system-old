@@ -208,11 +208,12 @@ INSERT INTO "transactions" (
 
 INSERT INTO "borrows" (
 	"copy_id",
-	"student_id"
+	"student_id",
+	"created_at"
 ) VALUES
-	(4, 1),
-	(5, 1),
-	(6, 1);
+	(4, 1, '2022-11-10 09:02:10'),
+	(5, 1, '2023-02-14 09:07:00'),
+	(6, 1, '2023-02-15 14:25:00');
 
 INSERT INTO "transactions" (
 	"transaction_type",
