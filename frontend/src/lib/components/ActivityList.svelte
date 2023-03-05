@@ -1,9 +1,12 @@
 <script lang="ts">
   import { formatDateTime } from "$lib/utils/DateTime";
 
-  export let activities:
-    | { type: string; book_name: string; date_time: Date; date_time_string: string }[]
-    | null;
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+
+  dayjs.extend(relativeTime);
+
+  export let activities: { type: string; book_name: string; date_time: Date }[] | null;
 </script>
 
 <div class="mt-6 flex flex-col items-start gap-1">
@@ -18,7 +21,7 @@
             class="tooltip tooltip-right text-sm text-gray-400"
             data-tip={formatDateTime(activity.date_time)}
           >
-            {activity.date_time_string}
+            {dayjs().to(activity.date_time)}
           </p>
         </li>
       {/each}

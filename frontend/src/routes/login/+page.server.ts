@@ -24,7 +24,7 @@ export const actions = {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id_type: Number(idType),
+        id_type: idType,
         id_num: idNum,
         password: password,
       }),
@@ -32,7 +32,7 @@ export const actions = {
     const data = await res.json();
 
     if (!res.ok) {
-      setFlash({ type: "error", message: data.error }, event);
+      setFlash({ type: "error", message: "unexpected error" }, event);
       return fail(res.status);
     }
 

@@ -37,7 +37,7 @@
   <div class="btn-group flex justify-center">
     <!-- Prev page -->
     <button
-      class="btn-primary btn-sm btn"
+      class="btn btn-primary btn-sm"
       disabled={pageNum == 1}
       on:click={() => {
         pageNum = pageNum - 1;
@@ -48,7 +48,7 @@
 
     <!-- First page -->
     <button
-      class="btn-primary btn-sm btn"
+      class="btn btn-primary btn-sm"
       class:bg-primary-focus={pageNum == 1}
       on:click={() => {
         pageNum = 1;
@@ -60,12 +60,12 @@
     <!-- Page before current -->
     {#if pageNum - 1 > 1}
       {#if pageNum - 2 != 1}
-        <button class="btn-primary btn-sm btn pointer-events-none">
+        <button class="btn btn-primary btn-sm pointer-events-none">
           <Fa class="inline-block" icon={faEllipsis} />
         </button>
       {/if}
       <button
-        class="btn-primary btn-sm btn"
+        class="btn btn-primary btn-sm"
         on:click={() => {
           pageNum = pageNum - 1;
         }}
@@ -76,7 +76,7 @@
 
     <!-- Current page -->
     {#if pageNum != 1 && pageNum != pagesCount}
-      <button class="btn-primary btn-sm btn bg-primary-focus">
+      <button class="btn btn-primary btn-sm bg-primary-focus">
         {pageNum}
       </button>
     {/if}
@@ -84,7 +84,7 @@
     <!-- Page after current -->
     {#if pageNum + 1 < pagesCount}
       <button
-        class="btn-primary btn-sm btn"
+        class="btn btn-primary btn-sm"
         on:click={() => {
           pageNum = pageNum + 1;
         }}
@@ -92,7 +92,7 @@
         {pageNum + 1}
       </button>
       {#if pageNum + 2 != pagesCount}
-        <button class="btn-primary btn-sm btn pointer-events-none">
+        <button class="btn btn-primary btn-sm pointer-events-none">
           <Fa class="inline-block" icon={faEllipsis} />
         </button>
       {/if}
@@ -101,7 +101,7 @@
     <!-- Last page -->
     {#if pagesCount != 1}
       <button
-        class="btn-primary btn-sm btn"
+        class="btn btn-primary btn-sm"
         class:bg-primary-focus={pageNum == pagesCount}
         on:click={() => {
           pageNum = pagesCount;
@@ -113,7 +113,7 @@
 
     <!-- Next page -->
     <button
-      class="btn-primary btn-sm btn"
+      class="btn btn-primary btn-sm"
       disabled={pageNum == pagesCount}
       on:click={() => {
         pageNum = pageNum + 1;

@@ -3,17 +3,23 @@
   import Fa from "svelte-fa/src/fa.svelte";
 
   import profile from "$lib/images/profile.jpg";
+  import dashboardCover from "$lib/images/dashboard_cover.png";
   import { formatDateTime } from "$lib/utils/DateTime";
 
   import type { LayoutData } from "./$types";
   export let data: LayoutData;
+
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+
+  dayjs.extend(relativeTime);
 </script>
 
 <h1 class="mb-4 text-4xl font-semibold lg:ml-8">Dashboard</h1>
 
 <div
   class="hero relative -ml-4 h-[300px] w-[calc(100%+2rem)]"
-  style="background-image: url(/src/lib/images/dashboard_cover.png);"
+  style="background-image: url({dashboardCover});"
 >
   <div class="hero-overlay bg-opacity-80" />
   <div class="hero-content absolute bottom-0 text-center text-neutral-content">
@@ -39,7 +45,7 @@
                 class="tooltip tooltip-right text-sm text-gray-400"
                 data-tip={formatDateTime(transaction.date_time)}
               >
-                {transaction.date_time_string}
+                {dayjs().to(transaction.date_time)}
               </p>
             </li>
           {/each}

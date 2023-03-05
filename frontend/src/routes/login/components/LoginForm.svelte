@@ -3,16 +3,25 @@
   import { enhance } from "$app/forms";
   import { initFlash, updateFlash } from "sveltekit-flash-message/client";
 
-  async function fetchIDTypes() {
-    const res = await fetch("/api/v1/id-types");
-    if (!res.ok) {
-      $flash = { type: "error", message: "Could not get ID types" };
-      throw "Could not get ID types";
-    }
+  type IDType = {
+    name: string;
+    value: string;
+  };
 
-    const data = await res.json();
-    return data.id_types;
-  }
+  const idTypes: IDType[] = [
+    {
+      name: "Student",
+      value: "student",
+    },
+    {
+      name: "Staff",
+      value: "staff",
+    },
+    {
+      name: "Teacher",
+      value: "teacher",
+    },
+  ];
 
   const flash = initFlash(page);
 
@@ -34,15 +43,9 @@
 >
   <div>
     <select class="select-bordered select w-full max-w-xs" name="id-type">
-      {#await fetchIDTypes()}
-        <option selected disabled>Loading...</option>
-      {:then idTypes}
-        {#each idTypes as idType}
-          <option value={idType.id}>{idType.id_type}</option>
-        {/each}
-      {:catch}
-        <option selected disabled>No ID types available</option>
-      {/await}
+      {#each idTypes as idType}
+        <option value={idType.value}>{idType.name}</option>
+      {/each}
     </select>
 
     <div class="form-control w-full max-w-xs">
@@ -73,5 +76,5 @@
     </div>
   </div>
 
-  <button type="submit" class="btn-primary btn m-auto" class:loading={isLoading}>Login</button>
+  <button type="submit" class="btn btn-primary m-auto" class:loading={isLoading}>Login</button>
 </form>

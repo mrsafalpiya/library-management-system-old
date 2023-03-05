@@ -62,11 +62,11 @@
 
 {#await fetchActivities(activityTabs[activityTabSelected].type, pageNum, pageSize)}
   <div class="mx-auto w-max">
-    <button class="btn-primary loading btn">Loading</button>
+    <button class="btn-primary btn loading">Loading</button>
   </div>
 {:then obj}
   <ActivityList activities={obj} />
   <Pagination bind:pageNum bind:pagesCount />
 {:catch _}
-  <p>Oops. Something's wrong.</p>
+  <p>Oops! Something went wrong.</p>
 {/await}

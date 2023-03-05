@@ -28,7 +28,7 @@
   <div class="drawer-content">
     <!-- Top bar -->
     <div class="flex items-center gap-2 bg-primary py-2 px-1 text-primary-content lg:hidden">
-      <label for="my-drawer-2" class="btn-primary drawer-button btn">
+      <label for="my-drawer-2" class="btn-primary btn drawer-button">
         <Fa class="inline-block" icon={faBars} />
       </label>
       <p class="basis-full text-xl">Library Management System</p>
@@ -85,7 +85,7 @@
       </div>
       <div class="divider hidden lg:flex" />
       <!-- Sidebar content here -->
-      {#if userIDType === "Student"}
+      {#if userIDType === "student"}
         <DrawerLink href="/member/student/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>
@@ -107,7 +107,7 @@
         <DrawerLink href="/member/student/handsout">
           <Fa class="inline-block" icon={faHandHolding} /> Handsout
         </DrawerLink>
-      {:else if userIDType === "Staff"}
+      {:else if userIDType === "staff"}
         <DrawerLink href="/member/staff/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>

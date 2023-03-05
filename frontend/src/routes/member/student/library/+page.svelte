@@ -34,7 +34,7 @@
     return obj.books;
   }
 
-  let sortQuery = "code-asc";
+  let sortQuery = "title-asc";
 
   function toggleSort(label: string) {
     switch (sortQuery) {
@@ -75,7 +75,7 @@
 
   {#await fetchBooks(pageNum, pageSize, sortQuery, searchKeyword)}
     <div class="mx-auto w-max">
-      <button class="btn-primary loading btn">Loading</button>
+      <button class="btn-primary btn loading">Loading</button>
     </div>
   {:then books}
     {#if books}
@@ -84,10 +84,6 @@
           <thead>
             <tr>
               <th class="w-10">#</th>
-              <th class="w-20 cursor-pointer" on:click={() => toggleSort("code")}>
-                <span class="mr-1">Code</span>
-                <SortIcon label="code" {sortQuery} />
-              </th>
               <th class="cursor-pointer" on:click={() => toggleSort("title")}>
                 <span class="mr-1">Name</span>
                 <SortIcon label="title" {sortQuery} />
@@ -107,7 +103,6 @@
             {#each books as book, i}
               <tr>
                 <th>{i + 1}</th>
-                <td>{book.code}</td>
                 <td class="whitespace-normal">{book.title}</td>
                 <td class="whitespace-normal">{book.author}</td>
                 <td class="whitespace-normal">{book.publisher}</td>
@@ -122,7 +117,7 @@
     {/if}
     <Pagination bind:pageNum bind:pagesCount {totalRecords} {pageSize} {pageRecordsCount} />
   {:catch}
-    <p class="text-center">Oops. Something's wrong</p>
+    <p class="text-center">Oops! Something went wrong.</p>
   {/await}
 </div>
 
