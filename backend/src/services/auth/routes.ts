@@ -17,10 +17,14 @@ export class LoginRequest {
   password: string;
 }
 
-export function registerRoutes(router: Router, serverCfg: ServerConfig) {
-  router.post(
-    "/auth/login",
+export function getRouter(serverCfg: ServerConfig): Router {
+  const authRouter = Router();
+
+  authRouter.post(
+    "/login",
     makeValidateBody(LoginRequest),
     handleLogin(serverCfg)
   );
+
+  return authRouter;
 }

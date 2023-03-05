@@ -6,6 +6,7 @@ import { exit } from "process";
 
 import AuthService from "./services/auth";
 import BooksService from "./services/books";
+import StudentService from "./services/student";
 import { Client } from "pg";
 
 // dotenv
@@ -33,8 +34,9 @@ export type ServerConfig = {
 function registerRoutes(expressInstance: Express, serverCfg: ServerConfig) {
   const routes = Router();
 
-  AuthService.registerRoutes(routes, serverCfg);
-  BooksService.registerRoutes(routes, serverCfg);
+  routes.use("/auth", AuthService.getRouter(serverCfg));
+  routes.use("/books", BooksService.getRouter(serverCfg));
+  routes.use("/student", StudentService.getRouter(serverCfg));
 
   expressInstance.use("/api/v1", routes);
 }

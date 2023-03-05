@@ -5,6 +5,7 @@ import {
   responseOK,
   responseServerError,
 } from "server/json";
+import { PaginationMetadata } from "server/pagination";
 import { getSortQuery } from "server/utils";
 import { IListBooksResult, listBooks, listBooksCount } from "./queries";
 
@@ -51,8 +52,14 @@ export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
 
     // Query for pagination metadata
 
-    let paginationTotalRecords: number;
-    let paginationLastPage: number;
+    let paginationMetadata: PaginationMetadata = {
+      current_page: queryPage,
+      first_page: 1,
+      last_page: 0,
+      page_records_count: 0,
+      page_size: querySize,
+      total_records: 0,
+    };
 
     try {
       const queryResult = await listBooksCount.run(
@@ -66,22 +73,18 @@ export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
         );
         return;
       }
-      paginationTotalRecords = parseInt(queryResult[0].count);
-      paginationLastPage = Math.ceil(paginationTotalRecords / querySize);
+      paginationMetadata.page_records_count = books.length;
+      paginationMetadata.total_records = parseInt(queryResult[0].count);
+      paginationMetadata.last_page = Math.ceil(
+        paginationMetadata.total_records / querySize
+      );
     } catch (e) {
       responseServerError(res, e);
       return;
     }
 
     responseOK(res, {
-      metadata: {
-        current_page: queryPage,
-        page_size: querySize,
-        first_page: 1,
-        last_page: paginationLastPage,
-        total_records: paginationTotalRecords,
-        page_records_count: books.length,
-      },
+      metadata: paginationMetadata,
       books: books,
     });
   };

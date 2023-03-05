@@ -22,6 +22,7 @@ export function responseBadRequest(res: Response, errorMessage: string) {
 
 export function responseServerError(res: Response, errorMessage: any) {
   logger.error(errorMessage);
+  console.log(errorMessage);
   responseJSON(res, 400, { error: "oops! unexpected error" });
 }
 

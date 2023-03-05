@@ -1,3 +1,3 @@
-import { registerRoutes } from "./routes";
+import { getRouter } from "./routes";
 
-export default { registerRoutes };
+export default { getRouter };

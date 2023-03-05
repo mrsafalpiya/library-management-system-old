@@ -3,11 +3,11 @@ import { type ServerConfig } from "app";
 import { JWTAuthorized } from "server/middlewares";
 import { handleListBooks } from "./handlers";
 
-export function registerRoutes(router: Router, serverCfg: ServerConfig) {
+export function getRouter(serverCfg: ServerConfig): Router {
   const booksRouter = Router();
   booksRouter.use(JWTAuthorized(serverCfg));
 
-  booksRouter.get("/books", handleListBooks(serverCfg));
+  booksRouter.get("/", handleListBooks(serverCfg));
 
-  router.use(booksRouter);
+  return booksRouter;
 }

@@ -50,3 +50,15 @@ export function JWTAuthorized(serverCfg: ServerConfig) {
     next();
   };
 }
+
+export function MustBeStudent(
+  req: AuthorizedRequest,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.user?.id_type != "student") {
+    responseUnauthorized(res, "must be student to access this resource");
+    return;
+  }
+  next();
+}
