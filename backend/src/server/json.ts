@@ -21,10 +21,10 @@ export function responseBadRequest(res: Response, errorMessage: string) {
 }
 
 export function responseServerError(res: Response, errorMessage: any) {
-  logger.error(errorMessage)
+  logger.error(errorMessage);
   responseJSON(res, 400, { error: "oops! unexpected error" });
 }
 
 export function responseUnauthorized(res: Response, errorMessage: any) {
-  responseJSON(res, 401, { error: errorMessage })
+  responseJSON(res, 401, { error: errorMessage });
 }

@@ -55,7 +55,6 @@ export function handleLogin(serverCfg: ServerConfig): RequestHandler {
 
     // Generate JWT
 
-    const secret = new TextEncoder().encode(serverCfg.jwtSecretKey);
     const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
 
     const jwt = new jose.SignJWT({
@@ -63,7 +62,7 @@ export function handleLogin(serverCfg: ServerConfig): RequestHandler {
       id_type: id_type,
       exp: exp,
     }).setProtectedHeader({ alg: "HS256" });
-    const token = await jwt.sign(secret);
+    const token = await jwt.sign(serverCfg.jwtSecretKey);
 
     responseOK(res, { token: token, expires: new Date(exp * 1000) });
   };

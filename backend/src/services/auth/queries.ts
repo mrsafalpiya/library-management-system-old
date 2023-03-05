@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/services/auth/queries.sql" */
-import { PreparedQuery } from '@pgtyped/runtime';
+import { PreparedQuery } from "@pgtyped/runtime";
 
 /** 'LoginStudent' parameters type */
 export interface ILoginStudentParams {
@@ -20,7 +20,19 @@ export interface ILoginStudentQuery {
   result: ILoginStudentResult;
 }
 
-const loginStudentIR: any = {"usedParamSet":{"idNum":true},"params":[{"name":"idNum","required":false,"transform":{"type":"scalar"},"locs":[{"a":78,"b":83}]}],"statement":"SELECT \"id\", \"id_num\", \"name\", \"password_hashed\"\nFROM \"students\" WHERE id_num=:idNum"};
+const loginStudentIR: any = {
+  usedParamSet: { idNum: true },
+  params: [
+    {
+      name: "idNum",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 78, b: 83 }],
+    },
+  ],
+  statement:
+    'SELECT "id", "id_num", "name", "password_hashed"\nFROM "students" WHERE id_num=:idNum',
+};
 
 /**
  * Query generated from SQL:
@@ -29,6 +41,7 @@ const loginStudentIR: any = {"usedParamSet":{"idNum":true},"params":[{"name":"id
  * FROM "students" WHERE id_num=:idNum
  * ```
  */
-export const loginStudent = new PreparedQuery<ILoginStudentParams,ILoginStudentResult>(loginStudentIR);
-
-
+export const loginStudent = new PreparedQuery<
+  ILoginStudentParams,
+  ILoginStudentResult
+>(loginStudentIR);

@@ -45,8 +45,8 @@ function validateAndAddToReqBody<T>(
               let messages: string[] = [];
 
               for (const key in e.constraints) {
-                let m = e.constraints[key]
-                messages.push(m.split(' ').slice(1).join(' '))
+                let m = e.constraints[key];
+                messages.push(m.split(" ").slice(1).join(" "));
               }
 
               errors.push({

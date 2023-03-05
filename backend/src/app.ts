@@ -5,7 +5,8 @@ import { setupAndGetDBConn } from "./db/connection";
 import { exit } from "process";
 
 import AuthService from "./services/auth";
-import {Client} from "pg";
+import BooksService from "./services/books";
+import { Client } from "pg";
 
 // dotenv
 dotenv.config({
@@ -26,14 +27,14 @@ const jwtSecretKey = process.env.JWTSECRET || "secret";
 export type ServerConfig = {
   expressInstance: Express;
   dbConn: Client;
-  jwtSecretKey: string;
+  jwtSecretKey: Uint8Array;
 };
-
 
 function registerRoutes(expressInstance: Express, serverCfg: ServerConfig) {
   const routes = Router();
 
   AuthService.registerRoutes(routes, serverCfg);
+  BooksService.registerRoutes(routes, serverCfg);
 
   expressInstance.use("/api/v1", routes);
 }
@@ -55,9 +56,8 @@ async function main() {
   let serverConfig: ServerConfig = {
     expressInstance,
     dbConn,
-    jwtSecretKey
-  }
-  serverConfig.jwtSecretKey = jwtSecretKey;
+    jwtSecretKey: new TextEncoder().encode(jwtSecretKey),
+  };
 
   registerRoutes(serverConfig.expressInstance, serverConfig);
 

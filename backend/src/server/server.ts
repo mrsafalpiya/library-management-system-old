@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { Express } from "express";
 import morgan from "morgan";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 interface ExpressError extends Error {
   statusCode?: number;
@@ -11,6 +12,7 @@ export function getServer(): Express {
   const expressInstance = express();
 
   expressInstance.use(bodyParser.json());
+  expressInstance.use(cookieParser());
   expressInstance.use(morgan("dev"));
 
   expressInstance.use(
