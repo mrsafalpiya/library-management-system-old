@@ -1,5 +1,5 @@
 import { ServerConfig } from "app";
-import { Response, RequestHandler, query } from "express";
+import { Response, RequestHandler } from "express";
 import {
   responseBadRequest,
   responseOK,
@@ -16,6 +16,7 @@ import {
   IGetStudentTransactionsResult,
   getStudentTransactionsCount,
 } from "./queries";
+import dayjs from "dayjs";
 
 export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
   return async function (req: AuthorizedRequest, res: Response) {
@@ -123,9 +124,9 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         newBorrow.author = borrow.author;
         newBorrow.publisher = borrow.publisher;
         newBorrow.issue_date = borrow.issue_date;
-        newBorrow.due_date = new Date(
-          newBorrow.issue_date.setMonth(newBorrow.issue_date.getMonth() + 12)
-        );
+        newBorrow.due_date = dayjs(newBorrow.issue_date)
+          .add(1, "month")
+          .toDate();
         if (new Date() > newBorrow.due_date) {
           newBorrow.is_late = true;
           outputBorrows.has_late_borrows = true;

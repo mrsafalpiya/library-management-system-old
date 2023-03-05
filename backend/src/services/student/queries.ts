@@ -127,7 +127,7 @@ const getStudentDashboardBorrowsIR: any = {
     },
   ],
   statement:
-    "SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date\nFROM borrows\nJOIN copies ON copies.id = borrows.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE borrows.student_id = :studentID",
+    "SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date\nFROM borrows\nJOIN copies ON copies.id = borrows.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE borrows.student_id = :studentID\nORDER BY issue_date DESC",
 };
 
 /**
@@ -138,6 +138,7 @@ const getStudentDashboardBorrowsIR: any = {
  * JOIN copies ON copies.id = borrows.copy_id
  * JOIN books ON books.id = copies.book_id
  * WHERE borrows.student_id = :studentID
+ * ORDER BY issue_date DESC
  * ```
  */
 export const getStudentDashboardBorrows = new PreparedQuery<

@@ -18,7 +18,8 @@ SELECT copies.register_id, books.title, books.author, books.publisher, borrows.c
 FROM borrows
 JOIN copies ON copies.id = borrows.copy_id
 JOIN books ON books.id = copies.book_id
-WHERE borrows.student_id = :studentID;
+WHERE borrows.student_id = :studentID
+ORDER BY issue_date DESC;
 
 /* @name getStudentTransactions */
 SELECT transactions.transaction_type as type, books.title as book_name, created_at as date_time
