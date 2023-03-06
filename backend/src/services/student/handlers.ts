@@ -15,8 +15,14 @@ import {
   IGetStudentDashboardBorrowsResult,
   IGetStudentTransactionsResult,
   getStudentTransactionsCount,
+  getStudentProfile,
+  updateStudentProfileDetails,
+  getStudentPasswordHashed,
+  updateStudentPassword,
 } from "./queries";
 import dayjs from "dayjs";
+import { PasswordRequest, UpdateRequest } from "./routes";
+import * as bcrypt from "bcrypt";
 
 export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
   return async function (req: AuthorizedRequest, res: Response) {
@@ -210,5 +216,95 @@ export function handleListTransactions(
       metadata: paginationMetadata,
       transactions: outputTransactions,
     });
+  };
+}
+
+export function handleGetProfile(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: AuthorizedRequest, res: Response) {
+    try {
+      const queryResponse = await getStudentProfile.run(
+        { studentID: req.user?.user_id },
+        serverCfg.dbConn
+      );
+      responseOK(res, queryResponse[0]);
+      return;
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
+  };
+}
+
+export function handleUpdateProfileDetails(
+  serverCfg: ServerConfig
+): RequestHandler {
+  return async function (req: AuthorizedRequest, res: Response) {
+    let requestBody = req.body as UpdateRequest;
+
+    try {
+      await updateStudentProfileDetails.run(
+        {
+          studentID: req.user?.user_id,
+          address: requestBody.address,
+          contact: requestBody.contact,
+          email: requestBody.email,
+        },
+        serverCfg.dbConn
+      );
+      responseOK(res, { response: "ok" });
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
+  };
+}
+
+export function handleUpdatePassword(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: AuthorizedRequest, res: Response) {
+    let requestBody = req.body as PasswordRequest;
+
+    // Get old password hashed.
+
+    let oldPasswordHashed = "";
+    try {
+      const queryResponse = await getStudentPasswordHashed.run(
+        { studentID: req.user?.user_id },
+        serverCfg.dbConn
+      );
+
+      oldPasswordHashed = queryResponse[0].password_hashed;
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
+
+    // Check if the old password matches.
+
+    const oldPasswordIsValid = await bcrypt.compare(
+      requestBody.old_password,
+      oldPasswordHashed
+    );
+    if (!oldPasswordIsValid) {
+      responseBadRequest(res, "old password is incorrect");
+      return;
+    }
+
+    // Hash new password and replace the old password.
+
+    let newPasswordHashed = await bcrypt.hash(requestBody.new_password, 12);
+
+    try {
+      await updateStudentPassword.run(
+        {
+          passwordHashed: newPasswordHashed,
+          studentID: req.user?.user_id,
+        },
+        serverCfg.dbConn
+      );
+      responseOK(res, { response: "ok" });
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
   };
 }

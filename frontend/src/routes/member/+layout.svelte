@@ -46,7 +46,7 @@
           tabindex="0"
           class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 text-base-content shadow"
         >
-          <li><a href="/profile">Update Profile</a></li>
+          <li><a href={`/member/${userIDType}/profile`}>Update Profile</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
       </div>
@@ -66,7 +66,7 @@
         <label tabindex="0" class="m-auto block w-full">
           <div class="btn-primary btn flex h-auto w-auto flex-col justify-center gap-4 p-2">
             <div class="flex flex-col gap-3">
-              <img class="w-24 rounded-full" src={profile} />
+              <img class="w-24 rounded-full" src={profile} alt="Profile" />
               <div>
                 <p>{userName}</p>
                 <p class="text-xs">{userIDType}</p>
@@ -79,7 +79,7 @@
           tabindex="0"
           class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 text-base-content shadow"
         >
-          <li><a href="/profile">Update Profile</a></li>
+          <li><a href={`/member/${userIDType}/profile`}>Update Profile</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
       </div>

@@ -273,3 +273,204 @@ export const getStudentTransactionsCount = new PreparedQuery<
   IGetStudentTransactionsCountParams,
   IGetStudentTransactionsCountResult
 >(getStudentTransactionsCountIR);
+
+/** 'GetStudentProfile' parameters type */
+export interface IGetStudentProfileParams {
+  studentID?: number | string | null | void;
+}
+
+/** 'GetStudentProfile' return type */
+export interface IGetStudentProfileResult {
+  address: string;
+  contact: string;
+  email: string;
+}
+
+/** 'GetStudentProfile' query type */
+export interface IGetStudentProfileQuery {
+  params: IGetStudentProfileParams;
+  result: IGetStudentProfileResult;
+}
+
+const getStudentProfileIR: any = {
+  usedParamSet: { studentID: true },
+  params: [
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 99, b: 108 }],
+    },
+  ],
+  statement:
+    'SELECT "students"."address", "students"."contact", "students"."email"\nFROM "students"\nWHERE "id" = :studentID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT "students"."address", "students"."contact", "students"."email"
+ * FROM "students"
+ * WHERE "id" = :studentID
+ * ```
+ */
+export const getStudentProfile = new PreparedQuery<
+  IGetStudentProfileParams,
+  IGetStudentProfileResult
+>(getStudentProfileIR);
+
+/** 'UpdateStudentProfileDetails' parameters type */
+export interface IUpdateStudentProfileDetailsParams {
+  address?: string | null | void;
+  contact?: string | null | void;
+  email?: string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'UpdateStudentProfileDetails' return type */
+export type IUpdateStudentProfileDetailsResult = void;
+
+/** 'UpdateStudentProfileDetails' query type */
+export interface IUpdateStudentProfileDetailsQuery {
+  params: IUpdateStudentProfileDetailsParams;
+  result: IUpdateStudentProfileDetailsResult;
+}
+
+const updateStudentProfileDetailsIR: any = {
+  usedParamSet: { address: true, contact: true, email: true, studentID: true },
+  params: [
+    {
+      name: "address",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 35, b: 42 }],
+    },
+    {
+      name: "contact",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 58, b: 65 }],
+    },
+    {
+      name: "email",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 79, b: 84 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 99, b: 108 }],
+    },
+  ],
+  statement:
+    'UPDATE "students"\nSET\n\t"address" = :address,\n\t"contact" = :contact,\n\t"email" = :email\nWHERE "id" = :studentID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * UPDATE "students"
+ * SET
+ * 	"address" = :address,
+ * 	"contact" = :contact,
+ * 	"email" = :email
+ * WHERE "id" = :studentID
+ * ```
+ */
+export const updateStudentProfileDetails = new PreparedQuery<
+  IUpdateStudentProfileDetailsParams,
+  IUpdateStudentProfileDetailsResult
+>(updateStudentProfileDetailsIR);
+
+/** 'GetStudentPasswordHashed' parameters type */
+export interface IGetStudentPasswordHashedParams {
+  studentID?: number | string | null | void;
+}
+
+/** 'GetStudentPasswordHashed' return type */
+export interface IGetStudentPasswordHashedResult {
+  password_hashed: string;
+}
+
+/** 'GetStudentPasswordHashed' query type */
+export interface IGetStudentPasswordHashedQuery {
+  params: IGetStudentPasswordHashedParams;
+  result: IGetStudentPasswordHashedResult;
+}
+
+const getStudentPasswordHashedIR: any = {
+  usedParamSet: { studentID: true },
+  params: [
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 65, b: 74 }],
+    },
+  ],
+  statement:
+    'SELECT "students"."password_hashed"\nFROM "students"\nWHERE "id" = :studentID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT "students"."password_hashed"
+ * FROM "students"
+ * WHERE "id" = :studentID
+ * ```
+ */
+export const getStudentPasswordHashed = new PreparedQuery<
+  IGetStudentPasswordHashedParams,
+  IGetStudentPasswordHashedResult
+>(getStudentPasswordHashedIR);
+
+/** 'UpdateStudentPassword' parameters type */
+export interface IUpdateStudentPasswordParams {
+  passwordHashed?: string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'UpdateStudentPassword' return type */
+export type IUpdateStudentPasswordResult = void;
+
+/** 'UpdateStudentPassword' query type */
+export interface IUpdateStudentPasswordQuery {
+  params: IUpdateStudentPasswordParams;
+  result: IUpdateStudentPasswordResult;
+}
+
+const updateStudentPasswordIR: any = {
+  usedParamSet: { passwordHashed: true, studentID: true },
+  params: [
+    {
+      name: "passwordHashed",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 42, b: 56 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 71, b: 80 }],
+    },
+  ],
+  statement:
+    'UPDATE "students"\nSET "password_hashed" = :passwordHashed\nWHERE "id" = :studentID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * UPDATE "students"
+ * SET "password_hashed" = :passwordHashed
+ * WHERE "id" = :studentID
+ * ```
+ */
+export const updateStudentPassword = new PreparedQuery<
+  IUpdateStudentPasswordParams,
+  IUpdateStudentPasswordResult
+>(updateStudentPasswordIR);

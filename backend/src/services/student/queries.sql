@@ -37,3 +37,26 @@ FROM transactions
 JOIN copies ON copies.id = transactions.copy_id
 JOIN books ON books.id = copies.book_id
 WHERE student_id = :studentID AND transaction_type ~* :transactionType;
+
+/* @name getStudentProfile */
+SELECT "students"."address", "students"."contact", "students"."email"
+FROM "students"
+WHERE "id" = :studentID;
+
+/* @name updateStudentProfileDetails */
+UPDATE "students"
+SET
+	"address" = :address,
+	"contact" = :contact,
+	"email" = :email
+WHERE "id" = :studentID;
+
+/* @name getStudentPasswordHashed */
+SELECT "students"."password_hashed"
+FROM "students"
+WHERE "id" = :studentID;
+
+/* @name updateStudentPassword */
+UPDATE "students"
+SET "password_hashed" = :passwordHashed
+WHERE "id" = :studentID;

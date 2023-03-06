@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+  import { faCircleCheck, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa/src/fa.svelte";
 
   export let flash: any;
@@ -17,10 +17,14 @@
   <div class="mx-auto w-max">
     <button
       class="btn flex gap-2 normal-case"
+      class:btn-success={$flash.type == "success"}
       class:btn-error={$flash.type == "error"}
       on:click={(e) => handleOnClick(e)}
     >
-      <Fa class="inline-block" icon={faTriangleExclamation} />
+      <Fa
+        class="inline-block"
+        icon={$flash.type == "success" ? faCircleCheck : faTriangleExclamation}
+      />
       <p class="first-letter:capitalize">{$flash.message}</p>
     </button>
   </div>

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { handleLogin } from "./handlers";
 import { type ServerConfig } from "app";
-import { makeValidateBody } from "server/validator";
+import { validateAndAddToReqBody } from "server/validator";
 import { IsIn, IsNotEmpty } from "class-validator";
 import { possibleIDTypes, type IDType } from "services/users/types";
 
@@ -22,7 +22,7 @@ export function getRouter(serverCfg: ServerConfig): Router {
 
   authRouter.post(
     "/login",
-    makeValidateBody(LoginRequest),
+    validateAndAddToReqBody(LoginRequest),
     handleLogin(serverCfg)
   );
 

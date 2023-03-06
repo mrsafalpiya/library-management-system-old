@@ -63,4 +63,4 @@ function validateAndAddToReqBody<T>(
   };
 }
 
-export { validateAndAddToReqBody as makeValidateBody };
+export { validateAndAddToReqBody };

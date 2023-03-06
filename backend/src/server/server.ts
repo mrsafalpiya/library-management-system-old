@@ -3,6 +3,7 @@ import { Express } from "express";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import multer from "multer";
 
 interface ExpressError extends Error {
   statusCode?: number;
@@ -12,6 +13,8 @@ export function getServer(): Express {
   const expressInstance = express();
 
   expressInstance.use(bodyParser.json());
+  expressInstance.use(bodyParser.urlencoded({ extended: true }));
+  expressInstance.use(multer().none());
   expressInstance.use(cookieParser());
   expressInstance.use(morgan("dev"));
 

@@ -1,6 +1,6 @@
 <script>
   import "../app.postcss";
-  import ErrorMsg from "$lib/components/ErrorMsg.svelte";
+  import FlashMsg from "$lib/components/FlashMsg.svelte";
   import { initFlash } from "sveltekit-flash-message/client";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
@@ -18,9 +18,9 @@
   <Spinner />
 {/if}
 
-<!-- Error Message -->
+<!-- Flash Message -->
 {#if $flash}
-  <ErrorMsg {flash} />
+  <FlashMsg {flash} />
 {/if}
 
 <slot />

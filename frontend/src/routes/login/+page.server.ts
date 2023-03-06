@@ -32,7 +32,7 @@ export const actions = {
     const data = await res.json();
 
     if (!res.ok) {
-      setFlash({ type: "error", message: "unexpected error" }, event);
+      setFlash({ type: "error", message: data.error }, event);
       return fail(res.status);
     }
 
