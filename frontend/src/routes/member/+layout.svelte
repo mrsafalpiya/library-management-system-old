@@ -98,15 +98,6 @@
         <DrawerLink href="/member/student/reserve">
           <Fa class="inline-block" icon={faBook} /> Reserve
         </DrawerLink>
-        <DrawerLink href="/member/student/file">
-          <Fa class="inline-block" icon={faFile} /> File
-        </DrawerLink>
-        <DrawerLink href="/member/student/submit">
-          <Fa class="inline-block" icon={faFileExport} /> Submit
-        </DrawerLink>
-        <DrawerLink href="/member/student/handsout">
-          <Fa class="inline-block" icon={faHandHolding} /> Handsout
-        </DrawerLink>
       {:else if userIDType === "staff"}
         <DrawerLink href="/member/staff/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
