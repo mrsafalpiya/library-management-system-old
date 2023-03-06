@@ -63,7 +63,7 @@
             <td class="whitespace-normal">{formatDate(reservation.created_at)}</td>
             <td>
               <button
-                class="btn-ghost btn-xs btn text-red-500"
+                class="btn btn-ghost btn-xs text-red-500"
                 on:click={(e) => removeReservation(e, reservation.id)}
               >
                 Remove

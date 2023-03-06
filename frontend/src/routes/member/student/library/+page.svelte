@@ -129,7 +129,7 @@
                 <td class="whitespace-normal">{book.author}</td>
                 <td class="whitespace-normal">{book.publisher}</td>
                 <td class="text-center text-primary-focus">
-                  <button class="btn-ghost btn-xs btn" on:click={(e) => reserveBook(e, book.id)}>
+                  <button class="btn btn-ghost btn-xs" on:click={(e) => reserveBook(e, book.id)}>
                     Reserve
                   </button>
                 </td>

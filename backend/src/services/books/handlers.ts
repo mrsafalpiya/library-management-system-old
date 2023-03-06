@@ -1,21 +1,13 @@
 import { ServerConfig } from "app";
 import { Response, RequestHandler, Request } from "express";
-import { DatabaseError } from "pg";
 import {
   responseBadRequest,
-  responseConflict,
   responseOK,
   responseServerError,
 } from "server/json";
 import { PaginationMetadata } from "server/pagination";
 import { getSortQuery } from "server/utils";
-import { AuthorizedRequest } from "services/users/types";
-import {
-  addReservation,
-  IListBooksResult,
-  listBooks,
-  listBooksCount,
-} from "./queries";
+import { IListBooksResult, listBooks, listBooksCount } from "./queries";
 
 export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
   return async function (req: Request, res: Response) {

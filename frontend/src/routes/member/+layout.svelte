@@ -102,8 +102,12 @@
         <DrawerLink href="/member/staff/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>
-        <DrawerLink href="/member/staff/users">
-          <Fa class="inline-block" icon={faUsers} /> Users
+        <DrawerLink href="/member/staff/members">
+          <Fa class="inline-block" icon={faUsers} /> Members
+        </DrawerLink>
+        <DrawerLink href="/member/staff/reservations">
+          <Fa class="inline-block" icon={faBook} /> Reservations
+          <div class="badge bg-primary-content">{data.stats.reservations_count}</div>
         </DrawerLink>
       {/if}
     </ul>

@@ -9,6 +9,8 @@ import BooksService from "./services/books";
 import StudentService from "./services/student";
 import UserService from "./services/users";
 import ReservationService from "./services/reservations";
+import StaffService from "./services/staff";
+
 import { Client } from "pg";
 
 // dotenv
@@ -41,6 +43,7 @@ function registerRoutes(expressInstance: Express, serverCfg: ServerConfig) {
   routes.use("/student", StudentService.getRouter(serverCfg));
   routes.use("/user", UserService.getRouter(serverCfg));
   routes.use("/reservation", ReservationService.getRouter(serverCfg));
+  routes.use("/staff", StaffService.getRouter(serverCfg));
 
   expressInstance.use("/api/v1", routes);
 }
