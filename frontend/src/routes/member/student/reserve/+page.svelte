@@ -17,6 +17,8 @@
   async function removeReservation(e: MouseEvent, reservationID: number) {
     const element = e.target as HTMLElement;
 
+    element.classList.add("loading");
+
     const res = await fetch(`/api/v1/reservation/${reservationID}`, {
       method: "DELETE",
     });
@@ -25,6 +27,8 @@
       element.style.pointerEvents = "none";
       return;
     }
+
+    element.classList.remove("loading");
 
     reservedBooks = reservedBooks.filter((b: any) => b.id != reservationID);
   }
@@ -59,7 +63,7 @@
             <td class="whitespace-normal">{formatDate(reservation.created_at)}</td>
             <td>
               <button
-                class="text-red-500 hover:underline"
+                class="btn-ghost btn-xs btn text-red-500"
                 on:click={(e) => removeReservation(e, reservation.id)}
               >
                 Remove

@@ -62,6 +62,7 @@
     } else {
       if (res.status == 409) {
         element.classList.add("text-orange-500");
+        element.classList.add("whitespace-normal");
         element.innerText = "Already reserved";
       } else {
         element.classList.add("text-red-500");
@@ -127,11 +128,8 @@
                 <td class="whitespace-normal">{book.title}</td>
                 <td class="whitespace-normal">{book.author}</td>
                 <td class="whitespace-normal">{book.publisher}</td>
-                <td>
-                  <button
-                    class="text-primary-focus hover:underline"
-                    on:click={(e) => reserveBook(e, book.id)}
-                  >
+                <td class="text-center text-primary-focus">
+                  <button class="btn-ghost btn-xs btn" on:click={(e) => reserveBook(e, book.id)}>
                     Reserve
                   </button>
                 </td>
