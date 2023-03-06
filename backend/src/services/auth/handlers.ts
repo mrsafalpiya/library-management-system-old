@@ -1,7 +1,7 @@
 import { Request, Response, RequestHandler } from "express";
 import { ServerConfig } from "app";
 import { LoginRequest } from "./routes";
-import { loginStudent } from "./queries";
+import { loginStaff, loginStudent } from "./queries";
 import {
   responseOK,
   responseServerError,
@@ -39,6 +39,27 @@ export function handleLogin(serverCfg: ServerConfig): RequestHandler {
 
           userID = studentID[0].id;
           passwordHashed = studentID[0].password_hashed;
+        } catch (e) {
+          responseServerError(res, e);
+          return;
+        }
+        break;
+      case "staff":
+        try {
+          let staffID = await loginStaff.run(
+            {
+              idNum: id_num,
+            },
+            serverCfg.dbConn
+          );
+
+          if (staffID.length == 0) {
+            responseUnauthorized(res, "invalid credentials");
+            return;
+          }
+
+          userID = staffID[0].id;
+          passwordHashed = staffID[0].password_hashed;
         } catch (e) {
           responseServerError(res, e);
           return;

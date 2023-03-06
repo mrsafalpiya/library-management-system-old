@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import { enhance } from "$app/forms";
   import { initFlash, updateFlash } from "sveltekit-flash-message/client";
+  import studentsIcon from "$lib/images/students_icon.png";
 
   type IDType = {
     name: string;
@@ -22,6 +23,12 @@
       value: "teacher",
     },
   ];
+  let selectedIDTypeValue = idTypes[0].value;
+
+  function IDNameFromValue(idTypes: IDType[], selectedIDTypeValue: string): string | undefined {
+    let selectedIDType = idTypes.find((id) => id.value == selectedIDTypeValue);
+    return selectedIDType?.name;
+  }
 
   const flash = initFlash(page);
 
@@ -41,8 +48,14 @@
       isLoading = false;
     }}
 >
+  <img src={studentsIcon} class="absolute bottom-0 right-0 -z-10 w-[100px]" alt="students" />
+
   <div>
-    <select class="select-bordered select w-full max-w-xs" name="id-type">
+    <select
+      class="select-bordered select w-full max-w-xs"
+      name="id-type"
+      bind:value={selectedIDTypeValue}
+    >
       {#each idTypes as idType}
         <option value={idType.value}>{idType.name}</option>
       {/each}
@@ -50,11 +63,11 @@
 
     <div class="form-control w-full max-w-xs">
       <label class="label" for="id-num">
-        <span class="label-text">Student ID</span>
+        <span class="label-text">{IDNameFromValue(idTypes, selectedIDTypeValue)} ID</span>
       </label>
       <input
         type="text"
-        placeholder="Enter Student ID here"
+        placeholder="Enter {IDNameFromValue(idTypes, selectedIDTypeValue)} ID here"
         name="id-num"
         class="input-bordered input w-full max-w-xs"
         autofocus
