@@ -42,7 +42,7 @@ build/api:
 ## docker/postgres: create a new docker container
 .PHONY: docker/postgres
 docker/postgres:
-	docker run --name ${CONTAINER_NAME} -p 5432:5432 -e PGUSER=${PGUSER} -e PGPASSWORD=${PGPASSWORD} -d ${IMAGE_NAME}
+	docker run --name ${CONTAINER_NAME} -p 5432:5432 -e POSTGRES_USER=${PGUSER} -e POSTGRES_PASSWORD=${PGPASSWORD} -d ${IMAGE_NAME}
 
 ## docker/createdb: create the database on the container
 .PHONY: docker/createdb
