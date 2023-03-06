@@ -1,4 +1,4 @@
-/* @name ListBooks */
+/* @name listBooks */
 SELECT *
 FROM "books"
 WHERE to_tsvector('english', title) @@ to_tsquery('english', :searchParam) or :searchParam = ''
@@ -11,7 +11,16 @@ ORDER BY (CASE WHEN :orderParam = 'title' AND :orderSort = 'asc' THEN title END)
 LIMIT :limit
 OFFSET :offset;
 
-/* @name ListBooksCount */
+/* @name listBooksCount */
 SELECT COUNT(*)
 FROM books
 WHERE to_tsvector('english', title) @@ to_tsquery('english', :searchParam) or :searchParam = '';
+
+/* @name addReservation */
+INSERT INTO "reservations" (
+	book_id,
+	student_id
+) VALUES (
+	:bookID,
+	:studentID
+);

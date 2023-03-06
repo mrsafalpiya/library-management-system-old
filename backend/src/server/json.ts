@@ -27,3 +27,7 @@ export function responseServerError(res: Response, errorMessage: any) {
 export function responseUnauthorized(res: Response, errorMessage: any) {
   responseJSON(res, 401, { error: errorMessage });
 }
+
+export function responseConflict(res: Response, errorMessage: any) {
+  responseJSON(res, 409, { error: errorMessage });
+}

@@ -150,3 +150,55 @@ export const listBooksCount = new PreparedQuery<
   IListBooksCountParams,
   IListBooksCountResult
 >(listBooksCountIR);
+
+/** 'AddReservation' parameters type */
+export interface IAddReservationParams {
+  bookID?: number | string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'AddReservation' return type */
+export type IAddReservationResult = void;
+
+/** 'AddReservation' query type */
+export interface IAddReservationQuery {
+  params: IAddReservationParams;
+  result: IAddReservationResult;
+}
+
+const addReservationIR: any = {
+  usedParamSet: { bookID: true, studentID: true },
+  params: [
+    {
+      name: "bookID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 63, b: 69 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 73, b: 82 }],
+    },
+  ],
+  statement:
+    'INSERT INTO "reservations" (\n\tbook_id,\n\tstudent_id\n) VALUES (\n\t:bookID,\n\t:studentID\n)',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * INSERT INTO "reservations" (
+ * 	book_id,
+ * 	student_id
+ * ) VALUES (
+ * 	:bookID,
+ * 	:studentID
+ * )
+ * ```
+ */
+export const addReservation = new PreparedQuery<
+  IAddReservationParams,
+  IAddReservationResult
+>(addReservationIR);

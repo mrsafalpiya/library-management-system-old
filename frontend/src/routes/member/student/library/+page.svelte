@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Loading from "$lib/components/Loading.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
   import SortIcon from "$lib/components/SortIcon.svelte";
 
@@ -49,6 +50,28 @@
     }
   }
 
+  async function reserveBook(e: MouseEvent, bookID: number) {
+    const element = e.target as HTMLElement;
+
+    const res = await fetch(`/api/v1/reservation/book/${bookID}`, {
+      method: "POST",
+    });
+    if (res.ok) {
+      element.classList.add("text-green-500");
+      element.innerText = "Done";
+    } else {
+      if (res.status == 409) {
+        element.classList.add("text-orange-500");
+        element.innerText = "Already reserved";
+      } else {
+        element.classList.add("text-red-500");
+        element.innerText = "Error";
+      }
+    }
+
+    element.style.pointerEvents = "none";
+  }
+
   let tempSearchKeyword = "";
 </script>
 
@@ -74,9 +97,7 @@
   </div>
 
   {#await fetchBooks(pageNum, pageSize, sortQuery, searchKeyword)}
-    <div class="mx-auto w-max">
-      <button class="btn-primary btn loading">Loading</button>
-    </div>
+    <Loading />
   {:then books}
     {#if books}
       <div class="overflow-x-auto">
@@ -106,7 +127,14 @@
                 <td class="whitespace-normal">{book.title}</td>
                 <td class="whitespace-normal">{book.author}</td>
                 <td class="whitespace-normal">{book.publisher}</td>
-                <td><button class="text-primary-focus hover:underline">Reserve</button></td>
+                <td>
+                  <button
+                    class="text-primary-focus hover:underline"
+                    on:click={(e) => reserveBook(e, book.id)}
+                  >
+                    Reserve
+                  </button>
+                </td>
               </tr>
             {/each}
           </tbody>

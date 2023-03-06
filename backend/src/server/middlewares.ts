@@ -62,3 +62,15 @@ export function MustBeStudent(
   }
   next();
 }
+
+export function MustBeStaff(
+  req: AuthorizedRequest,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.user?.id_type != "staff") {
+    responseUnauthorized(res, "must be staff to access this resource");
+    return;
+  }
+  next();
+}
