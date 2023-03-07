@@ -39,6 +39,7 @@ CREATE TABLE "borrows" (
   "copy_id" bigint NOT NULL,
   "student_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
+  "duration_days" integer NOT NULL DEFAULT 30,
 );
 
 CREATE TABLE "transactions" (
