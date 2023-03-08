@@ -455,3 +455,100 @@ export const returnBookTransactions = new PreparedQuery<
   IReturnBookTransactionsParams,
   IReturnBookTransactionsResult
 >(returnBookTransactionsIR);
+
+/** 'RenewBookBorrows' parameters type */
+export interface IRenewBookBorrowsParams {
+  copyID?: number | string | null | void;
+  durationDays?: number | null | void;
+}
+
+/** 'RenewBookBorrows' return type */
+export type IRenewBookBorrowsResult = void;
+
+/** 'RenewBookBorrows' query type */
+export interface IRenewBookBorrowsQuery {
+  params: IRenewBookBorrowsParams;
+  result: IRenewBookBorrowsResult;
+}
+
+const renewBookBorrowsIR: any = {
+  usedParamSet: { durationDays: true, copyID: true },
+  params: [
+    {
+      name: "durationDays",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 40, b: 52 }],
+    },
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 95, b: 101 }],
+    },
+  ],
+  statement:
+    'UPDATE "borrows"\nSET\n\t"duration_days" = :durationDays,\n\t"created_at" = now()\nWHERE "copy_id" = :copyID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * UPDATE "borrows"
+ * SET
+ * 	"duration_days" = :durationDays,
+ * 	"created_at" = now()
+ * WHERE "copy_id" = :copyID
+ * ```
+ */
+export const renewBookBorrows = new PreparedQuery<
+  IRenewBookBorrowsParams,
+  IRenewBookBorrowsResult
+>(renewBookBorrowsIR);
+
+/** 'RenewBookTransactions' parameters type */
+export interface IRenewBookTransactionsParams {
+  copyID?: number | string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'RenewBookTransactions' return type */
+export type IRenewBookTransactionsResult = void;
+
+/** 'RenewBookTransactions' query type */
+export interface IRenewBookTransactionsQuery {
+  params: IRenewBookTransactionsParams;
+  result: IRenewBookTransactionsResult;
+}
+
+const renewBookTransactionsIR: any = {
+  usedParamSet: { copyID: true, studentID: true },
+  params: [
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 90, b: 96 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 99, b: 108 }],
+    },
+  ],
+  statement:
+    'INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")\nVALUES (\'renew\', :copyID, :studentID)',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+ * VALUES ('renew', :copyID, :studentID)
+ * ```
+ */
+export const renewBookTransactions = new PreparedQuery<
+  IRenewBookTransactionsParams,
+  IRenewBookTransactionsResult
+>(renewBookTransactionsIR);

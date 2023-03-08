@@ -7,13 +7,13 @@
   export let bookDetails: any | null;
   export let bookRegisterIDInput: HTMLInputElement;
 
-  async function handleCopyRegistrationIDSearch(event: SubmitEvent) {
+  async function handleCopyRegisterIDSearch(event: SubmitEvent) {
     const element = event.target as HTMLFormElement;
     const submitBtn = element.getElementsByClassName("btn")[0];
     submitBtn.classList.add("loading");
 
     const formData = new FormData(element);
-    const copyRegisterID = formData.get("copy-registration-id");
+    const copyRegisterID = formData.get("copy-register-id");
 
     const res = await fetch("/api/v1/books/copy/" + copyRegisterID);
     if (!res.ok) {
@@ -47,17 +47,17 @@
 <!-- svelte-ignore a11y-autofocus -->
 <form
   class="form-control w-full max-w-md"
-  on:submit|preventDefault={(e) => handleCopyRegistrationIDSearch(e)}
+  on:submit|preventDefault={(e) => handleCopyRegisterIDSearch(e)}
 >
   <label class="label">
-    <span class="label-text">Book Registration ID</span>
+    <span class="label-text">Book Register ID</span>
   </label>
   <div class="flex items-center gap-3">
     <input
       type="text"
       placeholder="Scan here"
       class="input-bordered input w-full max-w-xs"
-      name="copy-registration-id"
+      name="copy-register-id"
       required
       autofocus
       bind:this={bookRegisterIDInput}

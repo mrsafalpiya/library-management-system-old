@@ -15,6 +15,8 @@ import {
   issueBookTransactions,
   listBooks,
   listBooksCount,
+  renewBookBorrows,
+  renewBookTransactions,
   returnBookBorrows,
   returnBookTransactions,
 } from "./queries";
@@ -173,6 +175,42 @@ export function handleReturnCopy(serverCfg: ServerConfig): RequestHandler {
         serverCfg.dbConn
       );
       await returnBookTransactions.run(
+        { copyID: req.body.copy_id, studentID: req.body.student_id },
+        serverCfg.dbConn
+      );
+
+      await serverCfg.dbConn.query("COMMIT;");
+
+      responseOK(res, { response: "ok" });
+      return;
+    } catch (e) {
+      await serverCfg.dbConn.query("ROLLBACK;");
+
+      const error = e as DatabaseError;
+
+      switch (error.code) {
+        default:
+          responseServerError(res, e);
+      }
+
+      return;
+    }
+  };
+}
+
+export function handleRenew(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: Request, res: Response) {
+    try {
+      await serverCfg.dbConn.query("BEGIN");
+
+      await renewBookBorrows.run(
+        {
+          durationDays: req.body.issue_duration_days,
+          copyID: req.body.copy_id,
+        },
+        serverCfg.dbConn
+      );
+      await renewBookTransactions.run(
         { copyID: req.body.copy_id, studentID: req.body.student_id },
         serverCfg.dbConn
       );

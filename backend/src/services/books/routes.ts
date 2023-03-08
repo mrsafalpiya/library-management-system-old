@@ -6,6 +6,7 @@ import {
   handleGetCopy,
   handleIssueCopy,
   handleReturnCopy,
+  handleRenew,
 } from "./handlers";
 import { validateAndAddToReqBody } from "server/validator";
 import { IsNotEmpty } from "class-validator";
@@ -49,6 +50,11 @@ export function getRouter(serverCfg: ServerConfig): Router {
     "/return",
     validateAndAddToReqBody(ReturnRequest),
     handleReturnCopy(serverCfg)
+  );
+  booksRouter.post(
+    "/renew",
+    validateAndAddToReqBody(IssueRequest),
+    handleRenew(serverCfg)
   );
 
   return booksRouter;

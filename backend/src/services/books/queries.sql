@@ -54,3 +54,14 @@ WHERE "copy_id" = :copyID;
 /* @name returnBookTransactions */
 INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
 VALUES ('return', :copyID, :studentID);
+
+/* @name renewBookBorrows */
+UPDATE "borrows"
+SET
+	"duration_days" = :durationDays,
+	"created_at" = now()
+WHERE "copy_id" = :copyID;
+
+/* @name renewBookTransactions */
+INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+VALUES ('renew', :copyID, :studentID);

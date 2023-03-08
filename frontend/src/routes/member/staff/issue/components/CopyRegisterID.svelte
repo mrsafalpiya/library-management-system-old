@@ -11,7 +11,7 @@
   let issueDurationDays = "30";
   let bookDetails: any | null = null;
 
-  let bookRegistrationIDTextBox: HTMLInputElement;
+  let bookRegisterIDTextBox: HTMLInputElement;
 
   async function updateBorrows() {
     const res = await fetch("/api/v1/user/student/" + studentDetails.user.id_num);
@@ -29,7 +29,7 @@
     studentID = parseInt(data.user.id);
   }
 
-  async function handleCopyRegistrationIDSearch(event: SubmitEvent) {
+  async function handleCopyRegisterIDSearch(event: SubmitEvent) {
     const element = event.target as HTMLFormElement;
     const submitBtn = element.getElementsByClassName("btn")[0];
     submitBtn.classList.add("loading");
@@ -97,7 +97,7 @@
     submitBtn.classList.remove("loading");
     await updateBorrows();
 
-    bookRegistrationIDTextBox.focus();
+    bookRegisterIDTextBox.focus();
   }
 </script>
 
@@ -105,21 +105,21 @@
 <!-- svelte-ignore a11y-autofocus -->
 <form
   class="form-control w-full max-w-md"
-  on:submit|preventDefault={(e) => handleCopyRegistrationIDSearch(e)}
+  on:submit|preventDefault={(e) => handleCopyRegisterIDSearch(e)}
 >
   <label class="label">
-    <span class="label-text">Book Registration ID</span>
+    <span class="label-text">Book Register ID</span>
   </label>
   <div class="flex items-center gap-3">
     <input
       type="text"
       placeholder="Scan here"
       class="input-bordered input w-full max-w-xs"
-      name="copy-registration-id"
+      name="copy-register-id"
       required
       bind:value={copyRegisterID}
       autofocus
-      bind:this={bookRegistrationIDTextBox}
+      bind:this={bookRegisterIDTextBox}
     />
     <button class="btn-primary btn">Search</button>
   </div>
@@ -131,7 +131,10 @@
   <p>Publisher: {bookDetails.publisher}</p>
   <p>Author: {bookDetails.author}</p>
 
-  <form class="mt-4 form-control w-full max-w-md" on:submit|preventDefault={(e) => handleIssueSubmit(e)}>
+  <form
+    class="form-control mt-4 w-full max-w-md"
+    on:submit|preventDefault={(e) => handleIssueSubmit(e)}
+  >
     <div class="flex items-center gap-3">
       <select
         class="select-bordered select w-full max-w-xs"
