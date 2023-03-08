@@ -14,7 +14,7 @@ ORDER BY transactions.id DESC
 LIMIT 4;
 
 /* @name getStudentDashboardBorrows */
-SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date
+SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date, borrows.duration_days as issue_duration_days
 FROM borrows
 JOIN copies ON copies.id = borrows.copy_id
 JOIN books ON books.id = copies.book_id

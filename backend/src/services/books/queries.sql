@@ -24,3 +24,9 @@ INSERT INTO "reservations" (
 	:bookID,
 	:studentID
 );
+
+/* @name getCopy */
+SELECT "copies"."id" as copy_id, "books".*
+FROM "books"
+JOIN "copies" ON "copies"."book_id" = "books"."id"
+WHERE "copies"."register_id" = :registerID;

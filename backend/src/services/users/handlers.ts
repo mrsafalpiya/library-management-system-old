@@ -1,5 +1,5 @@
 import { ServerConfig } from "app";
-import { Response, RequestHandler } from "express";
+import { Request, Response, RequestHandler } from "express";
 import {
   responseBadRequest,
   responseOK,
@@ -8,6 +8,7 @@ import {
 } from "server/json";
 import { PaginationMetadata } from "server/pagination";
 import { getSortQuery } from "server/utils";
+import { getBorrowsDetailFromQueryResult } from "services/student/helpers";
 import { AuthorizedRequest } from "services/users/types";
 import {
   getAllStaffs,
@@ -15,6 +16,8 @@ import {
   getAllStudents,
   getAllStudentsCount,
   getStaffName,
+  getStudentInfo,
+  getStudentBorrows,
   getStudentName,
   IGetAllStaffsResult,
   IGetAllStudentsResult,
@@ -220,5 +223,42 @@ export function handleGetAllStaffs(serverCfg: ServerConfig): RequestHandler {
       metadata: paginationMetadata,
       members: staffs,
     });
+  };
+}
+
+export function handleGetStudentInfo(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: Request, res: Response) {
+    const studentIDNum = req.params.studentIDNum;
+
+    try {
+      const studentInfoQueryResult = await getStudentInfo.run(
+        { studentIDNum },
+        serverCfg.dbConn
+      );
+
+      if (studentInfoQueryResult.length == 0) {
+        responseBadRequest(res, "student with given ID number does not exist");
+
+        return;
+      }
+
+      const studentBorrowsQueryResult = await getStudentBorrows.run(
+        { studentIDNum },
+        serverCfg.dbConn
+      );
+
+      const outputBorrows = getBorrowsDetailFromQueryResult(
+        studentBorrowsQueryResult
+      );
+
+      responseOK(res, {
+        user: studentInfoQueryResult[0],
+        borrows: outputBorrows,
+      });
+      return;
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
   };
 }

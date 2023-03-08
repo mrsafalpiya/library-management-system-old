@@ -21,6 +21,7 @@ export function responseBadRequest(res: Response, errorMessage: string) {
 }
 
 export function responseServerError(res: Response, errorMessage: any) {
+  console.log(errorMessage);
   responseJSON(res, 500, { error: "oops! unexpected error" });
 }
 

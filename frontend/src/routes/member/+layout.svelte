@@ -5,12 +5,13 @@
     faArrowRightArrowLeft,
     faBookOpen,
     faBook,
-    faFile,
-    faFileExport,
-    faHandHolding,
     faUsers,
+    faRepeat,
   } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa/src/fa.svelte";
+  import Icon from "@iconify/svelte";
+  import bookArrowRight from "@iconify/icons-mdi/book-arrow-right";
+  import bookArrowLeft from "@iconify/icons-mdi/book-arrow-left";
 
   import type { LayoutData } from "./$types";
 
@@ -38,7 +39,7 @@
         <label tabindex="0" class="block w-max">
           <div class="btn-primary btn flex h-auto w-auto flex-wrap-reverse items-center gap-4 p-2">
             <p>{userName}</p>
-            <img class="h-10 rounded-full" src={profile} />
+            <img class="h-10 rounded-full" src={profile} alt="profile" />
           </div>
         </label>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -102,6 +103,16 @@
         <DrawerLink href="/member/staff/dashboard">
           <Fa class="inline-block" icon={faTableColumns} /> Dashboard
         </DrawerLink>
+        <DrawerLink href="/member/staff/issue">
+          <Icon icon={bookArrowRight} class="mr-1" /> Issue a Book
+        </DrawerLink>
+        <DrawerLink href="/member/staff/return">
+          <Icon icon={bookArrowLeft} class="mr-1" /> Return a Book
+        </DrawerLink>
+        <DrawerLink href="/member/staff/renew">
+          <Fa class="inline-block" icon={faRepeat} /> Renew a Book
+        </DrawerLink>
+        <div class="divider" />
         <DrawerLink href="/member/staff/members">
           <Fa class="inline-block" icon={faUsers} /> Members
         </DrawerLink>

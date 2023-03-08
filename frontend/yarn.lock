@@ -145,6 +145,25 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.3.0"
 
+"@iconify/icons-mdi@^1.2.43":
+  version "1.2.43"
+  resolved "https://registry.yarnpkg.com/@iconify/icons-mdi/-/icons-mdi-1.2.43.tgz#e14563c1874780883bbc9a023ffe4d8eca72aa3e"
+  integrity sha512-Texi92FCDR4YCCo1wKXS5/eqY937uTPJGBShDXuTxUYZvszAx0CJFHQs4QNfHa7bHXZJjwl0+JBHGYj4IcBmvQ==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify/svelte@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@iconify/svelte/-/svelte-3.1.0.tgz#a295d95b2fefec437b296c25a8059a620c95c029"
+  integrity sha512-G1w1dcO7eiD+JmQJNwNW4qnAn86oQxKLe1P/iAPjJ0qYYuF7Pb60TPrlcj4+2gu4SXe3a0Jrv++8YmceG+gX/g==
+  dependencies:
+    "@iconify/types" "^2.0.0"
+
+"@iconify/types@*", "@iconify/types@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@iconify/types/-/types-2.0.0.tgz#ab0e9ea681d6c8a1214f30cd741fe3a20cc57f57"
+  integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==
+
 "@jridgewell/resolve-uri@3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@jridgewell/resolve-uri/-/resolve-uri-3.1.0.tgz#2203b118c157721addfe69d47b70465463066d78"
@@ -1099,6 +1118,11 @@ svelte-hmr@^0.15.1:
   version "0.15.1"
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.15.1.tgz#d11d878a0bbb12ec1cba030f580cd2049f4ec86b"
   integrity sha512-BiKB4RZ8YSwRKCNVdNxK/GfY+r4Kjgp9jCLEy0DuqAKfmQtpL38cQK3afdpjw4sqSs4PLi3jIPJIFp259NkZtA==
+
+svelte-multicssclass@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/svelte-multicssclass/-/svelte-multicssclass-2.1.0.tgz#0a40f112608130327243edb0de5b60e3d88f813b"
+  integrity sha512-aquFYyjhBA+6up14p0IMVBsXCeZaKeU2m/h0S4ePJi0eQMOAjah8rM5CKNiD5+Tvb/cjTV5hd9z0+y+FVA1cNg==
 
 svelte-preprocess@^4.10.7:
   version "4.10.7"

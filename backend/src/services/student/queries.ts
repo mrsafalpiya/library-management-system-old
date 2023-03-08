@@ -105,6 +105,7 @@ export interface IGetStudentDashboardBorrowsParams {
 export interface IGetStudentDashboardBorrowsResult {
   author: string;
   issue_date: Date;
+  issue_duration_days: number;
   publisher: string;
   register_id: string;
   title: string;
@@ -123,17 +124,17 @@ const getStudentDashboardBorrowsIR: any = {
       name: "studentID",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 227, b: 236 }],
+      locs: [{ a: 273, b: 282 }],
     },
   ],
   statement:
-    "SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date\nFROM borrows\nJOIN copies ON copies.id = borrows.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE borrows.student_id = :studentID\nORDER BY issue_date DESC",
+    "SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date, borrows.duration_days as issue_duration_days\nFROM borrows\nJOIN copies ON copies.id = borrows.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE borrows.student_id = :studentID\nORDER BY issue_date DESC",
 };
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date
+ * SELECT copies.register_id, books.title, books.author, books.publisher, borrows.created_at as issue_date, borrows.duration_days as issue_duration_days
  * FROM borrows
  * JOIN copies ON copies.id = borrows.copy_id
  * JOIN books ON books.id = copies.book_id

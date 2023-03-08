@@ -38,8 +38,8 @@ CREATE TABLE "borrows" (
   "id" bigserial PRIMARY KEY,
   "copy_id" bigint NOT NULL,
   "student_id" bigint NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
   "duration_days" integer NOT NULL DEFAULT 30,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "transactions" (

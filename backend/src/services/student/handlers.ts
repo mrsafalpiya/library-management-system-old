@@ -12,7 +12,6 @@ import {
   getStudentDashboardProfile,
   getStudentDashboardTransactions,
   getStudentTransactions,
-  IGetStudentDashboardBorrowsResult,
   IGetStudentTransactionsResult,
   getStudentTransactionsCount,
   getStudentProfile,
@@ -20,9 +19,10 @@ import {
   getStudentPasswordHashed,
   updateStudentPassword,
 } from "./queries";
-import dayjs from "dayjs";
 import { PasswordRequest, UpdateRequest } from "./routes";
 import * as bcrypt from "bcrypt";
+import { outputBorrowType } from "./types";
+import { getBorrowsDetailFromQueryResult } from "./helpers";
 
 export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
   return async function (req: AuthorizedRequest, res: Response) {
@@ -94,16 +94,6 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
 
     // Query about the borrows
 
-    interface borrowDetailsInterface extends IGetStudentDashboardBorrowsResult {
-      due_date: Date;
-      is_late: boolean;
-    }
-
-    type outputBorrowType = {
-      borrows_count: number;
-      has_late_borrows: boolean;
-      list: borrowDetailsInterface[];
-    };
     let outputBorrows: outputBorrowType = {
       borrows_count: 0,
       has_late_borrows: false,
@@ -120,26 +110,7 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         return;
       }
 
-      outputBorrows.borrows_count = queryResponse.length;
-
-      queryResponse.forEach((borrow) => {
-        let newBorrow = <borrowDetailsInterface>{};
-
-        newBorrow.register_id = borrow.register_id;
-        newBorrow.title = borrow.title;
-        newBorrow.author = borrow.author;
-        newBorrow.publisher = borrow.publisher;
-        newBorrow.issue_date = borrow.issue_date;
-        newBorrow.due_date = dayjs(newBorrow.issue_date)
-          .add(1, "month")
-          .toDate();
-        if (new Date() > newBorrow.due_date) {
-          newBorrow.is_late = true;
-          outputBorrows.has_late_borrows = true;
-        }
-
-        outputBorrows.list.push(newBorrow);
-      });
+      outputBorrows = getBorrowsDetailFromQueryResult(queryResponse);
     } catch (e) {
       responseServerError(res, e);
       return;

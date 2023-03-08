@@ -362,3 +362,102 @@ export const getAllStaffsCount = new PreparedQuery<
   IGetAllStaffsCountParams,
   IGetAllStaffsCountResult
 >(getAllStaffsCountIR);
+
+/** 'GetStudentInfo' parameters type */
+export interface IGetStudentInfoParams {
+  studentIDNum?: string | null | void;
+}
+
+/** 'GetStudentInfo' return type */
+export interface IGetStudentInfoResult {
+  batch: string;
+  id: string;
+  id_num: string;
+  name: string;
+}
+
+/** 'GetStudentInfo' query type */
+export interface IGetStudentInfoQuery {
+  params: IGetStudentInfoParams;
+  result: IGetStudentInfoResult;
+}
+
+const getStudentInfoIR: any = {
+  usedParamSet: { studentIDNum: true },
+  params: [
+    {
+      name: "studentIDNum",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 191, b: 203 }],
+    },
+  ],
+  statement:
+    'SELECT "students"."id", "students"."id_num", "students"."name", "batches"."name" AS batch\nFROM "students"\nJOIN "batches" ON "batches"."id" = "students"."batch_id"\nWHERE "students"."id_num" = :studentIDNum',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT "students"."id", "students"."id_num", "students"."name", "batches"."name" AS batch
+ * FROM "students"
+ * JOIN "batches" ON "batches"."id" = "students"."batch_id"
+ * WHERE "students"."id_num" = :studentIDNum
+ * ```
+ */
+export const getStudentInfo = new PreparedQuery<
+  IGetStudentInfoParams,
+  IGetStudentInfoResult
+>(getStudentInfoIR);
+
+/** 'GetStudentBorrows' parameters type */
+export interface IGetStudentBorrowsParams {
+  studentIDNum?: string | null | void;
+}
+
+/** 'GetStudentBorrows' return type */
+export interface IGetStudentBorrowsResult {
+  author: string;
+  issue_date: Date;
+  issue_duration_days: number;
+  publisher: string;
+  register_id: string;
+  title: string;
+}
+
+/** 'GetStudentBorrows' query type */
+export interface IGetStudentBorrowsQuery {
+  params: IGetStudentBorrowsParams;
+  result: IGetStudentBorrowsResult;
+}
+
+const getStudentBorrowsIR: any = {
+  usedParamSet: { studentIDNum: true },
+  params: [
+    {
+      name: "studentIDNum",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 380, b: 392 }],
+    },
+  ],
+  statement:
+    'SELECT "copies"."register_id", "books"."title", "books"."author", "books"."publisher", "borrows"."created_at" as issue_date, "borrows"."duration_days" as issue_duration_days\nFROM "borrows"\nJOIN "copies" ON "copies"."id" = "borrows"."copy_id"\nJOIN "books" ON "books"."id" = "copies"."book_id"\nJOIN "students" ON "students"."id" = "borrows"."student_id"\nWHERE "students"."id_num" = :studentIDNum\nORDER BY "issue_date" DESC',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT "copies"."register_id", "books"."title", "books"."author", "books"."publisher", "borrows"."created_at" as issue_date, "borrows"."duration_days" as issue_duration_days
+ * FROM "borrows"
+ * JOIN "copies" ON "copies"."id" = "borrows"."copy_id"
+ * JOIN "books" ON "books"."id" = "copies"."book_id"
+ * JOIN "students" ON "students"."id" = "borrows"."student_id"
+ * WHERE "students"."id_num" = :studentIDNum
+ * ORDER BY "issue_date" DESC
+ * ```
+ */
+export const getStudentBorrows = new PreparedQuery<
+  IGetStudentBorrowsParams,
+  IGetStudentBorrowsResult
+>(getStudentBorrowsIR);

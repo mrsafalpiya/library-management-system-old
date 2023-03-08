@@ -36,3 +36,18 @@ OFFSET :offset;
 SELECT COUNT(*)
 FROM "staffs"
 WHERE to_tsvector('english', "staffs"."name") @@ to_tsquery('english', :searchParam) or :searchParam = '';
+
+/* @name getStudentInfo */
+SELECT "students"."id", "students"."id_num", "students"."name", "batches"."name" AS batch
+FROM "students"
+JOIN "batches" ON "batches"."id" = "students"."batch_id"
+WHERE "students"."id_num" = :studentIDNum;
+
+/* @name getStudentBorrows */
+SELECT "copies"."register_id", "books"."title", "books"."author", "books"."publisher", "borrows"."created_at" as issue_date, "borrows"."duration_days" as issue_duration_days
+FROM "borrows"
+JOIN "copies" ON "copies"."id" = "borrows"."copy_id"
+JOIN "books" ON "books"."id" = "copies"."book_id"
+JOIN "students" ON "students"."id" = "borrows"."student_id"
+WHERE "students"."id_num" = :studentIDNum
+ORDER BY "issue_date" DESC;

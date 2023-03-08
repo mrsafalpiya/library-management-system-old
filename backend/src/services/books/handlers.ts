@@ -1,5 +1,6 @@
 import { ServerConfig } from "app";
 import { Response, RequestHandler, Request } from "express";
+import { DatabaseError } from "pg";
 import {
   responseBadRequest,
   responseOK,
@@ -7,7 +8,12 @@ import {
 } from "server/json";
 import { PaginationMetadata } from "server/pagination";
 import { getSortQuery } from "server/utils";
-import { IListBooksResult, listBooks, listBooksCount } from "./queries";
+import {
+  getCopy,
+  IListBooksResult,
+  listBooks,
+  listBooksCount,
+} from "./queries";
 
 export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
   return async function (req: Request, res: Response) {
@@ -87,5 +93,59 @@ export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
       metadata: paginationMetadata,
       books: books,
     });
+  };
+}
+
+export function handleGetCopy(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: Request, res: Response) {
+    const registerID = req.params.registerID;
+
+    try {
+      const queryResponse = await getCopy.run({ registerID }, serverCfg.dbConn);
+
+      if (queryResponse.length == 0) {
+        responseBadRequest(res, "given registration ID does not exist");
+        return;
+      }
+
+      responseOK(res, { book: queryResponse[0] });
+      return;
+    } catch (e) {
+      responseServerError(res, e);
+      return;
+    }
+  };
+}
+
+// TODO: Somehow avoid raw SQL.
+export function handleIssueCopy(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: Request, res: Response) {
+    try {
+      await serverCfg.dbConn.query("BEGIN");
+      await serverCfg.dbConn.query(
+        `INSERT INTO "borrows" ("copy_id", "student_id", "duration_days") VALUES ($1, $2, $3);`,
+        [req.body.copy_id, req.body.student_id, req.body.issue_duration_days]
+      );
+      await serverCfg.dbConn.query(
+        `INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id") VALUES ('borrow', $1, $2);`,
+        [req.body.copy_id, req.body.student_id]
+      );
+      await serverCfg.dbConn.query("COMMIT");
+      responseOK(res, { response: "ok" });
+      return;
+    } catch (e) {
+      await serverCfg.dbConn.query("ROLLBACK;");
+
+      const error = e as DatabaseError;
+
+      switch (error.code) {
+        case "23505":
+          responseBadRequest(res, "the student has already borrowed this book");
+          break;
+        default:
+          responseServerError(res, e);
+      }
+      return;
+    }
   };
 }

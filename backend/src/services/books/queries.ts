@@ -202,3 +202,50 @@ export const addReservation = new PreparedQuery<
   IAddReservationParams,
   IAddReservationResult
 >(addReservationIR);
+
+/** 'GetCopy' parameters type */
+export interface IGetCopyParams {
+  registerID?: string | null | void;
+}
+
+/** 'GetCopy' return type */
+export interface IGetCopyResult {
+  author: string;
+  copy_id: string;
+  id: string;
+  publisher: string;
+  title: string;
+}
+
+/** 'GetCopy' query type */
+export interface IGetCopyQuery {
+  params: IGetCopyParams;
+  result: IGetCopyResult;
+}
+
+const getCopyIR: any = {
+  usedParamSet: { registerID: true },
+  params: [
+    {
+      name: "registerID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 138, b: 148 }],
+    },
+  ],
+  statement:
+    'SELECT "copies"."id" as copy_id, "books".*\nFROM "books"\nJOIN "copies" ON "copies"."book_id" = "books"."id"\nWHERE "copies"."register_id" = :registerID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT "copies"."id" as copy_id, "books".*
+ * FROM "books"
+ * JOIN "copies" ON "copies"."book_id" = "books"."id"
+ * WHERE "copies"."register_id" = :registerID
+ * ```
+ */
+export const getCopy = new PreparedQuery<IGetCopyParams, IGetCopyResult>(
+  getCopyIR
+);

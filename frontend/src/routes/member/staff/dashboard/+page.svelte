@@ -1,7 +1,11 @@
 <script lang="ts">
   import dashboardCover from "$lib/images/dashboard_cover.png";
-  import { faBookOpen, faUsers } from "@fortawesome/free-solid-svg-icons";
+  import { faBookOpen, faRepeat, faUsers } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa/src/fa.svelte";
+  import Icon from "@iconify/svelte";
+  import bookArrowRight from "@iconify/icons-mdi/book-arrow-right";
+  import bookArrowLeft from "@iconify/icons-mdi/book-arrow-left";
+
   import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
@@ -18,9 +22,15 @@
     <div class="max-w-md">
       <h1 class="mb-5 text-5xl font-bold">Welcome to the Library</h1>
       <div class="flex justify-center gap-2">
-        <a href="/member/student/library" class="btn-primary btn btn-sm">Issue</a>
-        <a href="/member/student/library" class="btn-primary btn btn-sm">Return</a>
-        <a href="/member/student/library" class="btn-primary btn btn-sm">Renew</a>
+        <a href="/member/staff/issue" class="btn-primary btn btn-sm">
+          <Icon icon={bookArrowRight} class="mr-1" /> Issue
+        </a>
+        <a href="/member/staff/return" class="btn-primary btn btn-sm">
+          <Icon icon={bookArrowLeft} class="mr-1" /> Return
+        </a>
+        <a href="/member/staff/renew" class="btn-primary btn btn-sm">
+          <Fa icon={faRepeat} class="mr-1" /> Renew
+        </a>
       </div>
     </div>
   </div>
