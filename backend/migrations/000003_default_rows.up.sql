@@ -236,13 +236,11 @@ INSERT INTO transactions (
 	"student_id",
 	"created_at"
 ) VALUES
-	('borrow', 4, 4, '2022-02-20 02:05:12'),
-	('borrow', 5, 4, '2023-02-14 07:08:10');
+	('borrow', 7, 4, '2023-02-14 07:08:10');
 
 INSERT INTO "borrows" (
 	"copy_id",
 	"student_id",
 	"created_at"
 ) VALUES
-	(4, 4, '2022-02-20 02:05:12'),
-	(5, 4, '2023-02-14 07:08:10');
+	(7, 4, '2023-02-14 07:08:10');

@@ -73,10 +73,6 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         { studentID: req.user?.user_id },
         serverCfg.dbConn
       );
-      if (queryResponse.length == 0) {
-        responseBadRequest(res, "student does not exist");
-        return;
-      }
 
       queryResponse.forEach((transaction) => {
         let newTransaction = <outputTransactionsType>{};
@@ -105,10 +101,6 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
         { studentID: req.user?.user_id },
         serverCfg.dbConn
       );
-      if (queryResponse.length == 0) {
-        responseBadRequest(res, "student does not exist");
-        return;
-      }
 
       outputBorrows = getBorrowsDetailFromQueryResult(queryResponse);
     } catch (e) {

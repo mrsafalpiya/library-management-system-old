@@ -208,12 +208,10 @@ WHERE ("copy_id", "student_id") IN (
 
 DELETE FROM "transactions"
 WHERE ("transaction_type", "copy_id", "student_id") IN (
-	('borrow', 4, 4),
 	('borrow', 5, 4)
 );
 
 DELETE FROM "borrows"
 WHERE ("copy_id", "student_id") IN (
-	(4, 4),
 	(5, 4)
 );

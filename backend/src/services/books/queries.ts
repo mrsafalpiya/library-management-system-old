@@ -211,7 +211,14 @@ export interface IGetCopyParams {
 /** 'GetCopy' return type */
 export interface IGetCopyResult {
   author: string;
+  borrow_duration_days: number;
+  borrowed_date: Date;
+  borrower_batch: string;
+  borrower_id: string;
+  borrower_id_num: string;
+  borrower_name: string;
   copy_id: string;
+  copy_register_id: string;
   id: string;
   is_borrowed: boolean | null;
   publisher: string;
@@ -232,29 +239,219 @@ const getCopyIR: any = {
       required: false,
       transform: { type: "scalar" },
       locs: [
-        { a: 164, b: 174 },
-        { a: 288, b: 298 },
+        { a: 208, b: 218 },
+        { a: 754, b: 764 },
       ],
     },
   ],
   statement:
-    'SELECT "copies"."id" as copy_id, "books".*, EXISTS(\n\tSELECT 1\n\tFROM "borrows"\n\tJOIN "copies" ON "borrows"."copy_id" = "copies"."id"\n\tWHERE "copies"."register_id" = :registerID\n) AS is_borrowed\nFROM "books"\nJOIN "copies" ON "copies"."book_id" = "books"."id"\nWHERE "copies"."register_id" = :registerID',
+    'SELECT "copies"."id" AS copy_id, "copies"."register_id" as copy_register_id, "books".*, exists(\n\tselect 1\n\tFROM "borrows"\n\tJOIN "copies" ON "borrows"."copy_id" = "copies"."id"\n\tWHERE "copies"."register_id" = :registerID\n) AS is_borrowed, "students"."id" AS borrower_id, "students"."name" AS borrower_name, "students"."id_num" AS borrower_id_num, "batches"."name" AS borrower_batch, "borrows"."created_at" AS borrowed_date, "borrows"."duration_days" AS borrow_duration_days\nFROM "books"\nJOIN "copies" ON "copies"."book_id" = "books"."id"\nLEFT JOIN "borrows" ON "borrows"."copy_id" = "copies"."id"\nLEFT JOIN "students" ON "students"."id" = "borrows"."student_id"\nLEFT JOIN "batches" ON "batches"."id" = "students"."batch_id"\nWHERE "copies"."register_id" = :registerID',
 };
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT "copies"."id" as copy_id, "books".*, EXISTS(
- * 	SELECT 1
+ * SELECT "copies"."id" AS copy_id, "copies"."register_id" as copy_register_id, "books".*, exists(
+ * 	select 1
  * 	FROM "borrows"
  * 	JOIN "copies" ON "borrows"."copy_id" = "copies"."id"
  * 	WHERE "copies"."register_id" = :registerID
- * ) AS is_borrowed
+ * ) AS is_borrowed, "students"."id" AS borrower_id, "students"."name" AS borrower_name, "students"."id_num" AS borrower_id_num, "batches"."name" AS borrower_batch, "borrows"."created_at" AS borrowed_date, "borrows"."duration_days" AS borrow_duration_days
  * FROM "books"
  * JOIN "copies" ON "copies"."book_id" = "books"."id"
+ * LEFT JOIN "borrows" ON "borrows"."copy_id" = "copies"."id"
+ * LEFT JOIN "students" ON "students"."id" = "borrows"."student_id"
+ * LEFT JOIN "batches" ON "batches"."id" = "students"."batch_id"
  * WHERE "copies"."register_id" = :registerID
  * ```
  */
 export const getCopy = new PreparedQuery<IGetCopyParams, IGetCopyResult>(
   getCopyIR
 );
+
+/** 'IssueBookBorrows' parameters type */
+export interface IIssueBookBorrowsParams {
+  copyID?: number | string | null | void;
+  durationDays?: number | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'IssueBookBorrows' return type */
+export type IIssueBookBorrowsResult = void;
+
+/** 'IssueBookBorrows' query type */
+export interface IIssueBookBorrowsQuery {
+  params: IIssueBookBorrowsParams;
+  result: IIssueBookBorrowsResult;
+}
+
+const issueBookBorrowsIR: any = {
+  usedParamSet: { copyID: true, studentID: true, durationDays: true },
+  params: [
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 73, b: 79 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 82, b: 91 }],
+    },
+    {
+      name: "durationDays",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 94, b: 106 }],
+    },
+  ],
+  statement:
+    'INSERT INTO "borrows" ("copy_id", "student_id", "duration_days")\nVALUES (:copyID, :studentID, :durationDays)',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * INSERT INTO "borrows" ("copy_id", "student_id", "duration_days")
+ * VALUES (:copyID, :studentID, :durationDays)
+ * ```
+ */
+export const issueBookBorrows = new PreparedQuery<
+  IIssueBookBorrowsParams,
+  IIssueBookBorrowsResult
+>(issueBookBorrowsIR);
+
+/** 'IssueBookTransactions' parameters type */
+export interface IIssueBookTransactionsParams {
+  copyID?: number | string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'IssueBookTransactions' return type */
+export type IIssueBookTransactionsResult = void;
+
+/** 'IssueBookTransactions' query type */
+export interface IIssueBookTransactionsQuery {
+  params: IIssueBookTransactionsParams;
+  result: IIssueBookTransactionsResult;
+}
+
+const issueBookTransactionsIR: any = {
+  usedParamSet: { copyID: true, studentID: true },
+  params: [
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 91, b: 97 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 100, b: 109 }],
+    },
+  ],
+  statement:
+    'INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")\nVALUES (\'borrow\', :copyID, :studentID)',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+ * VALUES ('borrow', :copyID, :studentID)
+ * ```
+ */
+export const issueBookTransactions = new PreparedQuery<
+  IIssueBookTransactionsParams,
+  IIssueBookTransactionsResult
+>(issueBookTransactionsIR);
+
+/** 'ReturnBookBorrows' parameters type */
+export interface IReturnBookBorrowsParams {
+  copyID?: number | string | null | void;
+}
+
+/** 'ReturnBookBorrows' return type */
+export type IReturnBookBorrowsResult = void;
+
+/** 'ReturnBookBorrows' query type */
+export interface IReturnBookBorrowsQuery {
+  params: IReturnBookBorrowsParams;
+  result: IReturnBookBorrowsResult;
+}
+
+const returnBookBorrowsIR: any = {
+  usedParamSet: { copyID: true },
+  params: [
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 40, b: 46 }],
+    },
+  ],
+  statement: 'DELETE FROM "borrows"\nWHERE "copy_id" = :copyID',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * DELETE FROM "borrows"
+ * WHERE "copy_id" = :copyID
+ * ```
+ */
+export const returnBookBorrows = new PreparedQuery<
+  IReturnBookBorrowsParams,
+  IReturnBookBorrowsResult
+>(returnBookBorrowsIR);
+
+/** 'ReturnBookTransactions' parameters type */
+export interface IReturnBookTransactionsParams {
+  copyID?: number | string | null | void;
+  studentID?: number | string | null | void;
+}
+
+/** 'ReturnBookTransactions' return type */
+export type IReturnBookTransactionsResult = void;
+
+/** 'ReturnBookTransactions' query type */
+export interface IReturnBookTransactionsQuery {
+  params: IReturnBookTransactionsParams;
+  result: IReturnBookTransactionsResult;
+}
+
+const returnBookTransactionsIR: any = {
+  usedParamSet: { copyID: true, studentID: true },
+  params: [
+    {
+      name: "copyID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 91, b: 97 }],
+    },
+    {
+      name: "studentID",
+      required: false,
+      transform: { type: "scalar" },
+      locs: [{ a: 100, b: 109 }],
+    },
+  ],
+  statement:
+    'INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")\nVALUES (\'return\', :copyID, :studentID)',
+};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+ * VALUES ('return', :copyID, :studentID)
+ * ```
+ */
+export const returnBookTransactions = new PreparedQuery<
+  IReturnBookTransactionsParams,
+  IReturnBookTransactionsResult
+>(returnBookTransactionsIR);

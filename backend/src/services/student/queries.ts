@@ -26,11 +26,11 @@ const getStudentDashboardProfileIR: any = {
       name: "studentID",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 153, b: 162 }],
+      locs: [{ a: 147, b: 156 }],
     },
   ],
   statement:
-    "SELECT students.name, students.id_num, batches.name as batch\nFROM students\nLEFT OUTER JOIN batches ON batches.id = students.batch_id\nWHERE students.id = :studentID",
+    "SELECT students.name, students.id_num, batches.name as batch\nFROM students\nLEFT JOIN batches ON batches.id = students.batch_id\nWHERE students.id = :studentID",
 };
 
 /**
@@ -38,7 +38,7 @@ const getStudentDashboardProfileIR: any = {
  * ```
  * SELECT students.name, students.id_num, batches.name as batch
  * FROM students
- * LEFT OUTER JOIN batches ON batches.id = students.batch_id
+ * LEFT JOIN batches ON batches.id = students.batch_id
  * WHERE students.id = :studentID
  * ```
  */

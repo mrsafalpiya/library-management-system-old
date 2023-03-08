@@ -26,12 +26,31 @@ INSERT INTO "reservations" (
 );
 
 /* @name getCopy */
-SELECT "copies"."id" as copy_id, "books".*, EXISTS(
-	SELECT 1
+SELECT "copies"."id" AS copy_id, "copies"."register_id" as copy_register_id, "books".*, exists(
+	select 1
 	FROM "borrows"
 	JOIN "copies" ON "borrows"."copy_id" = "copies"."id"
 	WHERE "copies"."register_id" = :registerID
-) AS is_borrowed
+) AS is_borrowed, "students"."id" AS borrower_id, "students"."name" AS borrower_name, "students"."id_num" AS borrower_id_num, "batches"."name" AS borrower_batch, "borrows"."created_at" AS borrowed_date, "borrows"."duration_days" AS borrow_duration_days
 FROM "books"
 JOIN "copies" ON "copies"."book_id" = "books"."id"
+LEFT JOIN "borrows" ON "borrows"."copy_id" = "copies"."id"
+LEFT JOIN "students" ON "students"."id" = "borrows"."student_id"
+LEFT JOIN "batches" ON "batches"."id" = "students"."batch_id"
 WHERE "copies"."register_id" = :registerID;
+
+/* @name issueBookBorrows */
+INSERT INTO "borrows" ("copy_id", "student_id", "duration_days")
+VALUES (:copyID, :studentID, :durationDays);
+
+/* @name issueBookTransactions */
+INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+VALUES ('borrow', :copyID, :studentID);
+
+/* @name returnBookBorrows */
+DELETE FROM "borrows"
+WHERE "copy_id" = :copyID;
+
+/* @name returnBookTransactions */
+INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id")
+VALUES ('return', :copyID, :studentID);

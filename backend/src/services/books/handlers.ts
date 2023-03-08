@@ -11,8 +11,12 @@ import { getSortQuery } from "server/utils";
 import {
   getCopy,
   IListBooksResult,
+  issueBookBorrows,
+  issueBookTransactions,
   listBooks,
   listBooksCount,
+  returnBookBorrows,
+  returnBookTransactions,
 } from "./queries";
 
 export function handleListBooks(serverCfg: ServerConfig): RequestHandler {
@@ -117,20 +121,29 @@ export function handleGetCopy(serverCfg: ServerConfig): RequestHandler {
   };
 }
 
-// TODO: Somehow avoid raw SQL.
 export function handleIssueCopy(serverCfg: ServerConfig): RequestHandler {
   return async function (req: Request, res: Response) {
     try {
       await serverCfg.dbConn.query("BEGIN");
-      await serverCfg.dbConn.query(
-        `INSERT INTO "borrows" ("copy_id", "student_id", "duration_days") VALUES ($1, $2, $3);`,
-        [req.body.copy_id, req.body.student_id, req.body.issue_duration_days]
+
+      await issueBookBorrows.run(
+        {
+          copyID: req.body.copy_id,
+          studentID: req.body.student_id,
+          durationDays: req.body.issue_duration_days,
+        },
+        serverCfg.dbConn
       );
-      await serverCfg.dbConn.query(
-        `INSERT INTO "transactions" ("transaction_type", "copy_id", "student_id") VALUES ('borrow', $1, $2);`,
-        [req.body.copy_id, req.body.student_id]
+      await issueBookTransactions.run(
+        {
+          copyID: req.body.copy_id,
+          studentID: req.body.student_id,
+        },
+        serverCfg.dbConn
       );
+
       await serverCfg.dbConn.query("COMMIT");
+
       responseOK(res, { response: "ok" });
       return;
     } catch (e) {
@@ -145,6 +158,39 @@ export function handleIssueCopy(serverCfg: ServerConfig): RequestHandler {
         default:
           responseServerError(res, e);
       }
+      return;
+    }
+  };
+}
+
+export function handleReturnCopy(serverCfg: ServerConfig): RequestHandler {
+  return async function (req: Request, res: Response) {
+    try {
+      await serverCfg.dbConn.query("BEGIN");
+
+      await returnBookBorrows.run(
+        { copyID: req.body.copy_id },
+        serverCfg.dbConn
+      );
+      await returnBookTransactions.run(
+        { copyID: req.body.copy_id, studentID: req.body.student_id },
+        serverCfg.dbConn
+      );
+
+      await serverCfg.dbConn.query("COMMIT;");
+
+      responseOK(res, { response: "ok" });
+      return;
+    } catch (e) {
+      await serverCfg.dbConn.query("ROLLBACK;");
+
+      const error = e as DatabaseError;
+
+      switch (error.code) {
+        default:
+          responseServerError(res, e);
+      }
+
       return;
     }
   };

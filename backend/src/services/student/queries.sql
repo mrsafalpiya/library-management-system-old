@@ -1,7 +1,7 @@
 /* @name getStudentDashboardProfile */
 SELECT students.name, students.id_num, batches.name as batch
 FROM students
-LEFT OUTER JOIN batches ON batches.id = students.batch_id
+LEFT JOIN batches ON batches.id = students.batch_id
 WHERE students.id = :studentID;
 
 /* @name getStudentDashboardTransactions */

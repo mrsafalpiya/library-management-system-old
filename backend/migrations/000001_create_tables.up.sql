@@ -36,7 +36,7 @@ CREATE TABLE "reservations" (
 
 CREATE TABLE "borrows" (
   "id" bigserial PRIMARY KEY,
-  "copy_id" bigint NOT NULL,
+  "copy_id" bigint UNIQUE NOT NULL,
   "student_id" bigint NOT NULL,
   "duration_days" integer NOT NULL DEFAULT 30,
   "created_at" timestamptz NOT NULL DEFAULT (now())
