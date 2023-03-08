@@ -213,6 +213,7 @@ export interface IGetCopyResult {
   author: string;
   copy_id: string;
   id: string;
+  is_borrowed: boolean | null;
   publisher: string;
   title: string;
 }
@@ -230,17 +231,25 @@ const getCopyIR: any = {
       name: "registerID",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 138, b: 148 }],
+      locs: [
+        { a: 164, b: 174 },
+        { a: 288, b: 298 },
+      ],
     },
   ],
   statement:
-    'SELECT "copies"."id" as copy_id, "books".*\nFROM "books"\nJOIN "copies" ON "copies"."book_id" = "books"."id"\nWHERE "copies"."register_id" = :registerID',
+    'SELECT "copies"."id" as copy_id, "books".*, EXISTS(\n\tSELECT 1\n\tFROM "borrows"\n\tJOIN "copies" ON "borrows"."copy_id" = "copies"."id"\n\tWHERE "copies"."register_id" = :registerID\n) AS is_borrowed\nFROM "books"\nJOIN "copies" ON "copies"."book_id" = "books"."id"\nWHERE "copies"."register_id" = :registerID',
 };
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT "copies"."id" as copy_id, "books".*
+ * SELECT "copies"."id" as copy_id, "books".*, EXISTS(
+ * 	SELECT 1
+ * 	FROM "borrows"
+ * 	JOIN "copies" ON "borrows"."copy_id" = "copies"."id"
+ * 	WHERE "copies"."register_id" = :registerID
+ * ) AS is_borrowed
  * FROM "books"
  * JOIN "copies" ON "copies"."book_id" = "books"."id"
  * WHERE "copies"."register_id" = :registerID

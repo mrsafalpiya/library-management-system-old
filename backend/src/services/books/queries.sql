@@ -26,7 +26,12 @@ INSERT INTO "reservations" (
 );
 
 /* @name getCopy */
-SELECT "copies"."id" as copy_id, "books".*
+SELECT "copies"."id" as copy_id, "books".*, EXISTS(
+	SELECT 1
+	FROM "borrows"
+	JOIN "copies" ON "borrows"."copy_id" = "copies"."id"
+	WHERE "copies"."register_id" = :registerID
+) AS is_borrowed
 FROM "books"
 JOIN "copies" ON "copies"."book_id" = "books"."id"
 WHERE "copies"."register_id" = :registerID;

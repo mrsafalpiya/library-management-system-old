@@ -49,8 +49,15 @@
     }
 
     const data = await res.json();
-    bookDetails = data.book;
+    if (data.book.is_borrowed) {
+      $flash = { type: "error", message: "the given copy of the book is already issued" };
+      bookDetails = undefined;
+      submitBtn.classList.remove("loading");
+      return;
+    }
 
+    $flash = undefined;
+    bookDetails = data.book;
     submitBtn.classList.remove("loading");
   }
 
