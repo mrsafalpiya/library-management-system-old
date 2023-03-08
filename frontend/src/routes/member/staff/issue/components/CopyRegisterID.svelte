@@ -127,11 +127,11 @@
 
 <!-- svelte-ignore a11y-autofocus -->
 {#if bookDetails}
-  <p class="mt-4">Title: {bookDetails.title}</p>
+  <p class="mt-4 font-bold">{bookDetails.title}</p>
   <p>Publisher: {bookDetails.publisher}</p>
   <p>Author: {bookDetails.author}</p>
 
-  <form class="form-control w-full max-w-md" on:submit|preventDefault={(e) => handleIssueSubmit(e)}>
+  <form class="mt-4 form-control w-full max-w-md" on:submit|preventDefault={(e) => handleIssueSubmit(e)}>
     <div class="flex items-center gap-3">
       <select
         class="select-bordered select w-full max-w-xs"
