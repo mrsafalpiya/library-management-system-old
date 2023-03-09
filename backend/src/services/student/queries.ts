@@ -186,23 +186,26 @@ const getStudentTransactionsIR: any = {
       name: "transactionType",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 256, b: 271 }],
+      locs: [
+        { a: 237, b: 252 },
+        { a: 338, b: 353 },
+      ],
     },
     {
       name: "limit",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 304, b: 309 }],
+      locs: [{ a: 386, b: 391 }],
     },
     {
       name: "offset",
       required: false,
       transform: { type: "scalar" },
-      locs: [{ a: 318, b: 324 }],
+      locs: [{ a: 400, b: 406 }],
     },
   ],
   statement:
-    "SELECT transactions.transaction_type as type, books.title as book_name, created_at as date_time\nFROM transactions\nJOIN copies ON copies.id = transactions.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE student_id = :studentID AND transaction_type ~* :transactionType\nORDER BY created_at desc\nLIMIT :limit\nOFFSET :offset",
+    "SELECT transactions.transaction_type as type, books.title as book_name, created_at as date_time\nFROM transactions\nJOIN copies ON copies.id = transactions.copy_id\nJOIN books ON books.id = copies.book_id\nWHERE student_id = :studentID AND (:transactionType ~* 'other' AND transaction_type NOT IN ('return', 'borrow')) OR transaction_type ~* :transactionType\nORDER BY created_at desc\nLIMIT :limit\nOFFSET :offset",
 };
 
 /**
@@ -212,7 +215,7 @@ const getStudentTransactionsIR: any = {
  * FROM transactions
  * JOIN copies ON copies.id = transactions.copy_id
  * JOIN books ON books.id = copies.book_id
- * WHERE student_id = :studentID AND transaction_type ~* :transactionType
+ * WHERE student_id = :studentID AND (:transactionType ~* 'other' AND transaction_type NOT IN ('return', 'borrow')) OR transaction_type ~* :transactionType
  * ORDER BY created_at desc
  * LIMIT :limit
  * OFFSET :offset

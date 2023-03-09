@@ -129,7 +129,7 @@ export function handleListTransactions(
     try {
       const queryResponse = await getStudentTransactions.run(
         {
-          studentID: req.user?.user_id,
+          studentID: req.user?.user_id || req.params.student_id,
           transactionType: queryType,
           limit: querySize,
           offset: (queryPage - 1) * querySize,

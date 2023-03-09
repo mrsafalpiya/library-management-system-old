@@ -26,7 +26,7 @@ SELECT transactions.transaction_type as type, books.title as book_name, created_
 FROM transactions
 JOIN copies ON copies.id = transactions.copy_id
 JOIN books ON books.id = copies.book_id
-WHERE student_id = :studentID AND transaction_type ~* :transactionType
+WHERE student_id = :studentID AND (:transactionType ~* 'other' AND transaction_type NOT IN ('return', 'borrow')) OR transaction_type ~* :transactionType
 ORDER BY created_at desc
 LIMIT :limit
 OFFSET :offset;
