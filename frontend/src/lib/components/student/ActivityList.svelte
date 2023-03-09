@@ -6,6 +6,7 @@
 
   dayjs.extend(relativeTime);
 
+  export let prefix = "You";
   export let activities: { type: string; book_name: string; date_time: Date }[] | null;
 </script>
 
@@ -14,7 +15,8 @@
     <ul class="ml-4 mb-6 list-outside list-disc space-y-4">
       {#each activities as activity}
         <li>
-          You {activity.type}ed
+          {prefix}
+          {activity.type}ed
           <b>{activity.book_name}</b>
           <br />
           <p

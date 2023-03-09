@@ -19,8 +19,6 @@
     | null = null;
 </script>
 
-<h2 class="mt-8 mb-4 text-2xl">Books Borrowed</h2>
-
 <div class="overflow-x-auto">
   {#if borrows}
     <table class="table sm:w-full">
