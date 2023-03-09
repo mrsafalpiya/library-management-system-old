@@ -30,7 +30,11 @@ export const handle = (async ({ event, resolve }) => {
       const message = { type: "error", message: "Only student can access that page" } as const;
       throw redirect(302, "/member", message, event);
     }
-    if (event.url.pathname.startsWith("/member/staff") && userIDType != "staff") {
+    if (
+      (event.url.pathname.startsWith("/member/staff") ||
+        event.url.pathname.startsWith("/member/profile")) &&
+      userIDType != "staff"
+    ) {
       const message = { type: "error", message: "Only staff can access that page" } as const;
       throw redirect(302, "/member", message, event);
     }

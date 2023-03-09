@@ -44,6 +44,9 @@
       </div>
       <div class="stat-title">Total Books</div>
       <div class="stat-value text-secondary">{data.stats.books_count}</div>
+      <div class="stat-desc">
+        Total copies: {data.stats.copies_count}
+      </div>
     </div>
 
     <div class="stat">

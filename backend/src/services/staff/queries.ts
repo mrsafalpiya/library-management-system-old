@@ -51,6 +51,7 @@ export type IGetStaffDashboardStatsParams = void;
 /** 'GetStaffDashboardStats' return type */
 export interface IGetStaffDashboardStatsResult {
   books_count: string | null;
+  copies_count: string | null;
   reservations_count: string | null;
   staffs_count: string | null;
   students_count: string | null;
@@ -66,7 +67,7 @@ const getStaffDashboardStatsIR: any = {
   usedParamSet: {},
   params: [],
   statement:
-    'SELECT\n\t(SELECT count(*) AS books_count FROM "books"),\n\t(SELECT count(*) AS students_count FROM "students"),\n\t(SELECT count(*) AS staffs_count FROM "staffs"),\n\t(SELECT count(*) AS reservations_count FROM "reservations")',
+    'SELECT\n\t(SELECT count(*) AS books_count FROM "books"),\n\t(SELECT count(*) AS copies_count FROM "copies"),\n\t(SELECT count(*) AS students_count FROM "students"),\n\t(SELECT count(*) AS staffs_count FROM "staffs"),\n\t(SELECT count(*) AS reservations_count FROM "reservations")',
 };
 
 /**
@@ -74,6 +75,7 @@ const getStaffDashboardStatsIR: any = {
  * ```
  * SELECT
  * 	(SELECT count(*) AS books_count FROM "books"),
+ * 	(SELECT count(*) AS copies_count FROM "copies"),
  * 	(SELECT count(*) AS students_count FROM "students"),
  * 	(SELECT count(*) AS staffs_count FROM "staffs"),
  * 	(SELECT count(*) AS reservations_count FROM "reservations")

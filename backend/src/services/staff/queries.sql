@@ -6,6 +6,7 @@ WHERE "staffs"."id" = :staffID;
 /* @name getStaffDashboardStats */
 SELECT
 	(SELECT count(*) AS books_count FROM "books"),
+	(SELECT count(*) AS copies_count FROM "copies"),
 	(SELECT count(*) AS students_count FROM "students"),
 	(SELECT count(*) AS staffs_count FROM "staffs"),
 	(SELECT count(*) AS reservations_count FROM "reservations");

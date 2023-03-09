@@ -10,6 +10,7 @@ import StudentService from "./services/student";
 import UserService from "./services/users";
 import ReservationService from "./services/reservations";
 import StaffService from "./services/staff";
+import ProfileService from "./services/profile";
 
 import { Client } from "pg";
 
@@ -44,6 +45,7 @@ function registerRoutes(expressInstance: Express, serverCfg: ServerConfig) {
   routes.use("/user", UserService.getRouter(serverCfg));
   routes.use("/reservation", ReservationService.getRouter(serverCfg));
   routes.use("/staff", StaffService.getRouter(serverCfg));
+  routes.use("/profile", ProfileService.getRouter(serverCfg));
 
   expressInstance.use("/api/v1", routes);
 }

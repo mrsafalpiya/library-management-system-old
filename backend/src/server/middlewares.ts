@@ -74,3 +74,20 @@ export function MustBeStaff(
   }
   next();
 }
+
+export function MustBeEitherStudentOrStaff(
+  req: AuthorizedRequest,
+  res: Response,
+  next: NextFunction
+) {
+  const idType = req.user?.id_type;
+
+  if (idType != "student" && idType != "staff") {
+    responseUnauthorized(
+      res,
+      "must be student or staff to access this resource"
+    );
+    return;
+  }
+  next();
+}

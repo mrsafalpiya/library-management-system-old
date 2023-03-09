@@ -44,12 +44,14 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
 
     type outputStatsType = {
       books_count: number;
+      copies_count: number;
       students_count: number;
       staffs_count: number;
       reservations_count: number;
     };
     let outputStats: outputStatsType = {
       books_count: 0,
+      copies_count: 0,
       students_count: 0,
       staffs_count: 0,
       reservations_count: 0,
@@ -63,6 +65,9 @@ export function handleDashboard(serverCfg: ServerConfig): RequestHandler {
 
       outputStats.books_count = parseInt(
         queryResponse[0].books_count as string
+      );
+      outputStats.copies_count = parseInt(
+        queryResponse[0].copies_count as string
       );
       outputStats.students_count = parseInt(
         queryResponse[0].students_count as string
