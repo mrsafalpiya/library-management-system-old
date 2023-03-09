@@ -128,7 +128,7 @@
             <th class="w-10">#</th>
             <th class="cursor-pointer" on:click={() => toggleSort("name")}>
               <span class="mr-1">Name</span>
-              <SortIcon label="title" {sortQuery} />
+              <SortIcon label="name" {sortQuery} />
             </th>
             {#if tabs[usersTabSelected].title == "Students"}
               <th>
@@ -171,7 +171,9 @@
                 <td class="whitespace-normal">{user.batch}</td>
               {/if}
               <td class="text-center text-primary-focus">
-                <button class="btn btn-ghost btn-xs">Visit Profile</button>
+                <a href="/member/profile/student/{user.id_num}" class="btn btn-ghost btn-xs">
+                  Visit Profile
+                </a>
               </td>
             </tr>
           {/each}
