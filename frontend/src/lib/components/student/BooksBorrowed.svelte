@@ -21,7 +21,7 @@
 
 <div class="overflow-x-auto">
   {#if borrows}
-    <table class="table sm:w-full">
+    <table class="table-compact table md:table-normal sm:w-full">
       <thead>
         <tr>
           <th class="w-10">#</th>
